@@ -114,7 +114,6 @@ See some of the surviving mutants:
          utxo = self.utxos.pop(0)
          block = self.build_block_with_transactions(node, utxo, 5)
 -        self.utxos.append([block.vtx[-1].sha256, 0, block.vtx[-1].vout[0].nValue])
-+
          test_node.send_and_ping(msg_tx(block.vtx[1]))
          assert block.vtx[1].hash in node.getrawmempool()
  
@@ -128,7 +127,6 @@ See some of the surviving mutants:
              msg.block_txn_request = BlockTransactionsRequest(int(block_hash, 16), [])
              num_to_request = random.randint(1, len(block.vtx))
 -            msg.block_txn_request.from_absolute(sorted(random.sample(range(len(block.vtx)), num_to_request)))
-+  
              test_node.send_message(msg)
              test_node.wait_until(lambda: "blocktxn" in test_node.last_message, timeout=10)
 ```
