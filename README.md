@@ -80,7 +80,8 @@ e.g.
 ## Mutating functional tests
 
 Does it make sense? Yes! See: https://github.com/trailofbits/necessist/blob/master/docs/Necessist%20Mutation%202024.pdf
-Of course, this is so much simpler than necessist and focused on Bitcoin Core, but mutating tests really makes sense.
+
+Of course, this is much simpler than necessist and focused on Bitcoin Core, but mutating tests really makes sense.
 
 See an example of the usage of this tool for `test/functional/p2p_compactblocks.py`.
 
