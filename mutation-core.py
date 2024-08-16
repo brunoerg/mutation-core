@@ -6,7 +6,6 @@ from get_changes import (
 )
 from gen_mutations import mutate
 from analyze import analyze
-from report import report
 
 import argparse
 import os
@@ -20,6 +19,7 @@ def mkdir_mutation_folder(name):
     path = os.path.join(BASE_PATH, name)
     if not os.path.isdir(f'{BASE_PATH}/{name}'):
         os.mkdir(path)
+
 
 def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mutations=False, higher_order_mutants=False):
     if file:
@@ -38,6 +38,7 @@ def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mut
         })
     for item in result:
         mutate(item['file_path'], item['lines_touched'], pr_number, one_mutant, only_security_mutations)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Tool for applying mutation testing in Bitcoin Core.")
@@ -73,7 +74,7 @@ def main():
     elif args.subcommand == "analyze":
         if args.folder == "" and args.command == "":
             sys.exit("You should provide the folder which contains the mutants and the command to test them")
-        analyze_out = analyze(folder_path=args.folder, command=args.command)
+        analyze(folder_path=args.folder, command=args.command)
     else:
         parser.print_help()
         sys.exit("No command provided.")

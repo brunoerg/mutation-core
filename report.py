@@ -1,6 +1,7 @@
 import subprocess
 import os
 
+
 def report(not_killed_mutants=[], folder="", original_file=""):
     # Define the filenames
     markdown_file = 'diff_not_killed.md'

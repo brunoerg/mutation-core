@@ -5,7 +5,11 @@ import re
 import os
 
 from random import shuffle
-from operators import REGEX_OPERATORS, SECURITY_OPERATORS, FUNCTIONAL_TEST_OPERATORS
+from operators import (
+    REGEX_OPERATORS,
+    SECURITY_OPERATORS,
+    FUNCTIONAL_TEST_OPERATORS
+)
 
 BASE_PATH = str(pathlib.Path().resolve())
 BASE_MUT = f'{BASE_PATH}/muts'
@@ -35,6 +39,7 @@ def mkdir_mutation_folder(name, file_to_mutate):
         with open(f'{path}/{file_path}', 'w') as file:
             file.write(file_to_mutate)
 
+
 def write_mutation(file_to_mutate, lines, i, pr_number=None):
     file_extension = ".cpp"
     if ".h" in file_to_mutate:
@@ -53,6 +58,7 @@ def write_mutation(file_to_mutate, lines, i, pr_number=None):
     with open(mutator_file, 'w', encoding="utf8") as file:
         file.writelines(lines)
         return i + 1
+
 
 def mutate(file_to_mutate, touched_lines=None, pr_number=None, one_mutant=False, only_security_mutations=False):
     print(f"Generating mutants for {file_to_mutate}...")
@@ -80,7 +86,8 @@ def mutate(file_to_mutate, touched_lines=None, pr_number=None, one_mutant=False,
 
         if line_before_mutation.lstrip().startswith(tuple(DO_NOT_MUTATE)):
             continue
-        if ".py" in file_to_mutate and any(word in line_before_mutation for word in DO_NOT_MUTATE_PY):
+        if ".py" in file_to_mutate and any(word in line_before_mutation
+                                           for word in DO_NOT_MUTATE_PY):
             continue
         mutation_done = False
         for operator in ALL_OPS:

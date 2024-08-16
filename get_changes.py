@@ -1,6 +1,7 @@
 import subprocess
 import sys
 
+
 def run_git_command(cmd):
     """Run a git command and capture its output."""
     try:
@@ -9,6 +10,7 @@ def run_git_command(cmd):
     except subprocess.CalledProcessError as e:
         print(f"Error running command: {' '.join(cmd)}\n{e.stderr}")
         sys.exit(1)
+
 
 def get_changed_files(pr_number=None):
     if pr_number:
@@ -19,13 +21,14 @@ def get_changed_files(pr_number=None):
         cmd = ['git', 'checkout', f'pr/{pr_number}']
         run_git_command(cmd)
 
-    cmd = ['git', 'diff', '--name-only', f'upstream/master...HEAD']
+    cmd = ['git', 'diff', '--name-only', 'upstream/master...HEAD']
     files = run_git_command(cmd)
     return files
 
+
 def get_lines_touched(file_path):
     """Get the lines touched in a specific file of the pull request."""
-    cmd = ['git', 'diff', '--unified=0', f'upstream/master...HEAD', '--', file_path]
+    cmd = ['git', 'diff', '--unified=0', 'upstream/master...HEAD', '--', file_path]
     diff_output = run_git_command(cmd)
 
     lines = []

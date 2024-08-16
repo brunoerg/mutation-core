@@ -3,10 +3,12 @@ import os
 
 from report import report
 
+
 # False == mutant killed
 def run(command):
     try:
-        subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+        subprocess.run(command, check=True, stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE, text=True, shell=True)
         return True
     except subprocess.CalledProcessError:
         return False
@@ -15,13 +17,14 @@ def run(command):
 def analyze(folder_path, command=""):
     killed = []
     not_killed = []
-    
+
     with open(os.path.join(folder_path, 'original_file.txt'), 'r') as file:
         target_file_path = file.readline()
 
     try:
         # Get list of files in the folder
-        files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+        files = [f for f in os.listdir(folder_path)
+                 if os.path.isfile(os.path.join(folder_path, f))]
 
         # Loop through each file in the folder
         len_files = len(files)
