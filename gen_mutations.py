@@ -19,6 +19,13 @@ DO_NOT_MUTATE = ["//",
                  "LogPrintf",
                  "LogPrint"]
 
+DO_NOT_MUTATE_PY = ["wait_for",
+                    "wait_until",
+                    "check_",
+                    "def",
+                    "send_and_ping",
+                    "test_"]
+
 
 def mkdir_mutation_folder(name, file_to_mutate):
     path = os.path.join(BASE_PATH, name)
@@ -73,7 +80,7 @@ def mutate(file_to_mutate, touched_lines=None, pr_number=None, one_mutant=False,
 
         if line_before_mutation.lstrip().startswith(tuple(DO_NOT_MUTATE)):
             continue
-        if ".py" in file_to_mutate and "wait_for" in line_before_mutation or "wait_until" in line_before_mutation or "check_" in line_before_mutation or "def" in line_before_mutation or "send_and_ping" in line_before_mutation or "test_" in line_before_mutation:
+        if ".py" in file_to_mutate and any(word in line_before_mutation for word in DO_NOT_MUTATE_PY):
             continue
         mutation_done = False
         for operator in ALL_OPS:
