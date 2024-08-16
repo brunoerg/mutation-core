@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+import pathlib
+import re
+import os
+
+from random import shuffle
+from operators import REGEX_OPERATORS, SECURITY_OPERATORS, FUNCTIONAL_TEST_OPERATORS
+
+BASE_PATH = str(pathlib.Path().resolve())
+BASE_MUT = f'{BASE_PATH}/muts'
+DO_NOT_MUTATE = ["//",
+                 "#",
+                 "*",
+                 "assert",
+                 "self.log",
+                 "Assume",
+                 "/*",
+                 "LogPrintf",
+                 "LogPrint"]
+
+
+def mkdir_mutation_folder(name, file_to_mutate):
+    path = os.path.join(BASE_PATH, name)
+    if not os.path.isdir(f'{BASE_PATH}/{name}'):
+        os.mkdir(path)
+        file_path = "original_file.txt"
+        with open(f'{path}/{file_path}', 'w') as file:
+            file.write(file_to_mutate)
+
+def write_mutation(file_to_mutate, lines, i, pr_number=None):
+    file_extension = ".cpp"
+    if ".h" in file_to_mutate:
+        file_extension = ".h"
+    if ".py" in file_to_mutate:
+        file_extension = ".py"
+    file_name = file_to_mutate.split('/')
+    file_name = file_name[len(file_name) - 1].split('.')[0]
+
+    folder = "muts"
+    if pr_number:
+        ext = file_extension.replace('.', '')
+        folder = f'muts-pr-{pr_number}-{file_name}-{ext}'
+    mkdir_mutation_folder(folder, file_to_mutate)
+    mutator_file = f'{BASE_PATH}/{folder}/{file_name}.mutant.{i}{file_extension}'
+    with open(mutator_file, 'w', encoding="utf8") as file:
+        file.writelines(lines)
+        return i + 1
+
+def mutate(file_to_mutate, touched_lines=None, pr_number=None, one_mutant=False, only_security_mutations=False):
+    print(f"Generating mutants for {file_to_mutate}...")
+    input_file = f'{BASE_PATH}/{file_to_mutate}'
+
+    with open(input_file, 'r', encoding="utf8") as source_code:
+        source_code = source_code.readlines()
+
+    ALL_OPS = SECURITY_OPERATORS
+    if not only_security_mutations:
+        ALL_OPS += REGEX_OPERATORS
+    if ".py" in file_to_mutate:
+        ALL_OPS = FUNCTIONAL_TEST_OPERATORS
+
+    touched_lines = touched_lines if touched_lines else list(range(1, len(source_code)))
+    if one_mutant:
+        shuffle(ALL_OPS)
+        shuffle(touched_lines)
+
+    i = 0
+    for line_num in touched_lines:
+        line_num = line_num - 1
+        lines = source_code.copy()
+        line_before_mutation = lines[line_num]
+
+        if line_before_mutation.lstrip().startswith(tuple(DO_NOT_MUTATE)):
+            continue
+        if ".py" in file_to_mutate and "wait_for" in line_before_mutation or "wait_until" in line_before_mutation or "check_" in line_before_mutation or "def" in line_before_mutation or "send_and_ping" in line_before_mutation or "test_" in line_before_mutation:
+            continue
+        mutation_done = False
+        for operator in ALL_OPS:
+            if re.search(operator[0], line_before_mutation):
+                operators_sub = [operator[1]]
+                for op_sub in operators_sub:
+                    line_mutated = re.sub(operator[0], op_sub, line_before_mutation)
+                    lines[line_num] = f'{line_before_mutation[:-len(line_before_mutation.lstrip())]}{line_mutated}'
+                    i = write_mutation(file_to_mutate, lines, i, pr_number)
+                    if one_mutant:
+                        mutation_done = True
+                        break
+            else:
+                continue
+            if mutation_done:
+                break
+    print(f"Generated {i} mutants...")
