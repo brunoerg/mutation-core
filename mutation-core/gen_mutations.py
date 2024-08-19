@@ -28,7 +28,8 @@ DO_NOT_MUTATE_PY = ["wait_for",
                     "check_",
                     "def",
                     "send_and_ping",
-                    "test_"]
+                    "test_",
+                    "sync_with_ping"]
 
 
 def mkdir_mutation_folder(name, file_to_mutate):
