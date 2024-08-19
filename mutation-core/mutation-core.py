@@ -41,7 +41,7 @@ def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mut
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Tool for applying mutation testing in Bitcoin Core.")
+    parser = argparse.ArgumentParser(description="Mutation testing tool designed for Bitcoin Core.")
     subparsers = parser.add_subparsers(title="valid subcommands", dest="subcommand")
 
     parser_mutate = subparsers.add_parser("mutate", help="Create mutants for a specific PR (0 = current branch) or file")
