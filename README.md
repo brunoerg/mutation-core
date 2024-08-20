@@ -81,7 +81,9 @@ e.g.
 
 Does it make sense? Yes! See: https://github.com/trailofbits/necessist/blob/master/docs/Necessist%20Mutation%202024.pdf
 
-Of course, this is much simpler than necessist and focused on Bitcoin Core, but mutating tests really makes sense.
+Of course, this is much simpler than necessist and focused on Bitcoin Core, but mutating tests really makes sense. 
+By removing some statements and method calls, we can check whether the test passes and identify buggy tests. In our case, we 
+will not touch any `wait_for`, `wait_until`, `send_and_ping`, `assert_*` and other verifications.
 
 See an example of the usage of this tool for `test/functional/p2p_compactblocks.py`.
 
@@ -93,6 +95,7 @@ See an example of the usage of this tool for `test/functional/p2p_compactblocks.
 ```
 
 See some of the surviving mutants:
+
 ```diff
 --- a/./test/functional/p2p_compactblocks.py
 +++ b/muts/p2p_compactblocks.mutant.205.py
