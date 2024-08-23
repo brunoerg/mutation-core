@@ -33,7 +33,9 @@ DO_NOT_MUTATE_PY = ["wait_for",
                     "class",
                     "return",
                     "continue", 
-                    "break"]
+                    "break",
+                    "if",
+                    "else"]
 
 
 def mkdir_mutation_folder(name, file_to_mutate):
