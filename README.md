@@ -53,28 +53,28 @@
 
 Generate mutants for a specific file:
 ```sh
-./mutation-core.py mutate -f=path/to/file
+./mutation-core mutate -f=path/to/file
 ```
 
 Generate mutants for a specific PR (it will only create mutants for the touched code):
 ```sh
-./mutation-core.py mutate -p=PR_NUMBER
+./mutation-core mutate -p=PR_NUMBER
 ```
 
-Generate only one mutant per line (if you want faster analysis):
+Create only one mutant per line (if you want faster analysis):
 ```sh
-./mutation-core.py mutate -p=PR_NUMBER --one_mutant=1
+./mutation-core mutate -p=PR_NUMBER --one_mutant=1
 ```
 
 If you do not specify either a file or PR number, it will create mutants for the touched code by the current branch you are checked out. If the specified file is a Python one, it will create mutants considering it is a functional test.
 
 The `mutate` command will create a folder with all mutants. To test them you can use:
 ```sh
-./mutation-core.py analyze -f=path/to/folder -c="command to test each mutant"
+./mutation-core analyze -f=path/to/folder -c="command to test each mutant"
 ```
 e.g.
 ```sh
-./mutation-core.py analyze -f=path/to/folder -c="make && ./test/functional/bla.py"
+./mutation-core analyze -f=path/to/folder -c="make && ./test/functional/bla.py"
 ```
 
 ## Mutating functional tests
@@ -88,10 +88,10 @@ will not touch any `wait_for`, `wait_until`, `send_and_ping`, `assert_*` and oth
 See an example of the usage of this tool for `test/functional/p2p_compactblocks.py`.
 
 ```bash
-./mutation-core.py mutate -f="./test/functional/p2p_compactblocks.py"
+./mutation-core mutate -f="./test/functional/p2p_compactblocks.py"
 ```
 ```bash
-./mutation-core.py analyze -f="muts" -c="./test/functional/p2p_compactblocks.py"
+./mutation-core analyze -f="muts" -c="./test/functional/p2p_compactblocks.py"
 ```
 
 See some of the surviving mutants:

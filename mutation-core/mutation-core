@@ -21,7 +21,7 @@ def mkdir_mutation_folder(name):
         os.mkdir(path)
 
 
-def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mutations=False, higher_order_mutants=False):
+def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mutations=False):
     if file:
         mutate(file, touched_lines=None, pr_number=None, one_mutant=one_mutant, only_security_mutations=only_security_mutations)
         return
@@ -50,9 +50,9 @@ def main():
     parser_mutate.add_argument('-f', '--file', dest="file", default="", type=str,
                                help="File path")
     parser_mutate.add_argument('-om', '--one_mutant', dest="one_mutant", default=False, type=bool,
-                               help="Generate only one mutant per line")
+                               help="Create only one mutant per line (default=0)")
     parser_mutate.add_argument('-s', '--only_security_mutations', dest="only_security_mutations", default=False, type=bool,
-                               help="Apply only security-based mutations (usually to test fuzzing)")
+                               help="Apply only security-based mutations (usually to test fuzzing, default=0)")
     parser_analyze = subparsers.add_parser("analyze", help="Analyze mutants")
     parser_analyze.add_argument('-f', '--folder', dest="folder", default="", type=str,
                                help="Folder with the mutants")
