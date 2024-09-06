@@ -74,14 +74,14 @@ The `mutate` command will create a folder with all mutants. To test them you can
 ```
 e.g.
 ```sh
-./mutation-core analyze -f=path/to/folder -c="make && ./test/functional/bla.py"
+./mutation-core analyze -f=path/to/folder -c="rm -rf build && cmake -B build && cmake --build build && ./build/test/functional/foo123.py"
 ```
 
 ## Mutating functional tests
 
 Does it make sense? Yes! See: https://github.com/trailofbits/necessist/blob/master/docs/Necessist%20Mutation%202024.pdf
 
-Of course, this is much simpler than necessist and focused on Bitcoin Core, but mutating tests really makes sense. 
+Of course, this tool is much simpler than necessist and designed for Bitcoin Core, but mutating tests really makes sense.
 By removing some statements and method calls, we can check whether the test passes and identify buggy tests. In our case, we 
 will not touch any `wait_for`, `wait_until`, `send_and_ping`, `assert_*` and other verifications.
 
