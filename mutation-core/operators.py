@@ -43,6 +43,7 @@ REGEX_OPERATORS = [[r"--(\b\w+\b)", r"++\1"],
                   ]
 
 # Might be caught by fuzz tests
+# Some operators were inspired by the study: https://www.usenix.org/system/files/usenixsecurity23-gorz.pdf
 SECURITY_OPERATORS = [
     ["==", "="],
     [r" - ", " + "],
@@ -53,6 +54,7 @@ SECURITY_OPERATORS = [
     [r"\b((?:int16_t|uint16_t|int32_t|uint32_t|int64_t|uint64_t|int)\s*[\(\{])([^\)\}]*)[\)\}]", "\2"],
     [r"ignore\((\s*(\d+)\s*)\)", r"ignore(\2 + 100)"],
     [r"(\w+)\[(\w+)\]", r"\1[\2 + 5]"],
+    [r"^\s*(?:\(void\)\s*)?[a-zA-Z_][\w:]*\s*\([\w\s,]*\)\s*;\s*$", r""],
     [r"if\s*\(\s*(.*?)\s*\|\|\s*(.*?)\s*\)", r"if(\2||\1)"],
     [r"GetSelectionAmount\(\)", r"GetSelectionAmount() + std::numeric_limits<CAmount>::max() - 1"],
     [r"resetBlock\(\);", ""],
