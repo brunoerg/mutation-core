@@ -74,9 +74,9 @@ def mutate(file_to_mutate, touched_lines=None, pr_number=None, one_mutant=False,
     with open(input_file, 'r', encoding="utf8") as source_code:
         source_code = source_code.readlines()
 
-    ALL_OPS = SECURITY_OPERATORS
-    if not only_security_mutations:
-        ALL_OPS += REGEX_OPERATORS
+    ALL_OPS = REGEX_OPERATORS
+    if only_security_mutations:
+        ALL_OPS = SECURITY_OPERATORS
     if ".py" in file_to_mutate:
         ALL_OPS = FUNCTIONAL_TEST_OPERATORS
 
