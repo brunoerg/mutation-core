@@ -21,9 +21,9 @@ def mkdir_mutation_folder(name):
         os.mkdir(path)
 
 
-def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mutations=False):
+def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mutations=False, range_lines=None):
     if file:
-        mutate(file, touched_lines=None, pr_number=None, one_mutant=one_mutant, only_security_mutations=only_security_mutations)
+        mutate(file, touched_lines=None, pr_number=None, one_mutant=one_mutant, only_security_mutations=only_security_mutations, range_lines=range_lines)
         return
     files_changed = get_changed_files(pr_number)
     result = []
@@ -49,6 +49,8 @@ def main():
                                help="Bitcoin Core's PR number")
     parser_mutate.add_argument('-f', '--file', dest="file", default="", type=str,
                                help="File path")
+    parser_mutate.add_argument('-r', '--range', dest="range_lines", type=int, default=None, nargs=2,
+                               help="Specify a range of lines from a file to be mutated")
     parser_mutate.add_argument('-om', '--one_mutant', dest="one_mutant", default=False, type=bool,
                                help="Create only one mutant per line (default=0)")
     parser_mutate.add_argument('-s', '--only_security_mutations', dest="only_security_mutations", default=False, type=bool,
@@ -68,7 +70,11 @@ def main():
         if args.pr != 0:
             mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations)
         elif args.file != "":
-            mutation_core(file=args.file, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations)
+            range_lines = args.range_lines
+            if range_lines:
+                if range_lines[0] > range_lines[1]:
+                    sys.exit("Invalid range")
+            mutation_core(file=args.file, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations, range_lines=range_lines)
         else:
             mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations)
     elif args.subcommand == "analyze":
