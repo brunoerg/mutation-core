@@ -49,7 +49,7 @@ SECURITY_OPERATORS = [
     [r" - ", " + "],
     [r"\s\+\s", "-"],
     [r"std::array<\s*([\w:]+)\s*,\s*(\d+)\s*>", r"std::array<\1, \2 - 2>"],
-    [r"\b(if|while)\s*\(([^)]+)\)", r"\1 (!(\2))"],
+    # [r"\b(if|while)\s*\(([^)]+)\)", r"\1 (!(\2))"],
     # [r"^\s*[a-zA-Z_][a-zA-Z_0-9]*\s*=\s*[^=][^;]*;\s*$", ""],
     [r"\b((?:int16_t|uint16_t|int32_t|uint32_t|int64_t|uint64_t|int)\s*[\(\{])([^\)\}]*)[\)\}]", "\2"],
     [r"ignore\((\s*(\d+)\s*)\)", r"ignore(\2 + 100)"],
