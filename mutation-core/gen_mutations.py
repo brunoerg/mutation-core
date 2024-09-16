@@ -95,9 +95,11 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None, one_mutant=Fal
 
         if line_before_mutation.lstrip().startswith(tuple(DO_NOT_MUTATE)):
             continue
-        if ".py" in file_to_mutate and any(word in line_before_mutation
-                                           for word in DO_NOT_MUTATE_PY):
-            continue
+        if ".py" in file_to_mutate:
+            if any(word in line_before_mutation for word in DO_NOT_MUTATE_PY):
+                continue
+            if re.search(r"^\s*([a-zA-Z_]\w*)\s*=\s*(.+)$", line_before_mutation):
+                continue
         mutation_done = False
         for operator in ALL_OPS:
             if re.search(operator[0], line_before_mutation):
