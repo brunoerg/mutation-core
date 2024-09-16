@@ -67,7 +67,7 @@ def write_mutation(file_to_mutate, lines, i, pr_number=None):
         return i + 1
 
 
-def mutate(file_to_mutate, touched_lines=None, pr_number=None, one_mutant=False, only_security_mutations=False):
+def mutate(file_to_mutate="", touched_lines=None, pr_number=None, one_mutant=False, only_security_mutations=False, range_lines=None):
     print(f"Generating mutants for {file_to_mutate}...")
     input_file = f'{BASE_PATH}/{file_to_mutate}'
 
@@ -88,6 +88,8 @@ def mutate(file_to_mutate, touched_lines=None, pr_number=None, one_mutant=False,
     i = 0
     for line_num in touched_lines:
         line_num = line_num - 1
+        if line_num < range_lines[0] or line_num > range_lines[1]:
+            continue
         lines = source_code.copy()
         line_before_mutation = lines[line_num]
 
