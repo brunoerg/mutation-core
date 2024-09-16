@@ -88,7 +88,7 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None, one_mutant=Fal
     i = 0
     for line_num in touched_lines:
         line_num = line_num - 1
-        if range_lines and line_num < range_lines[0] or line_num > range_lines[1]:
+        if range_lines and (line_num < range_lines[0] or line_num > range_lines[1]):
             continue
         lines = source_code.copy()
         line_before_mutation = lines[line_num]
