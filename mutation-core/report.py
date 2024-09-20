@@ -8,6 +8,10 @@ def report(not_killed_mutants=[], folder="", original_file=""):
     # Initialize a variable to hold the diff output
     diff_content = ""
 
+    if "test/" in original_file:
+        start_index = original_file.find("test/")
+        original_file = original_file[start_index:] if start_index != -1 else None
+
     subprocess.run(['git', 'checkout', '--', original_file])
 
     # Iterate over all files in the directory

@@ -32,7 +32,7 @@ DO_NOT_MUTATE_PY = ["wait_for",
                     "sync_with_ping",
                     "class",
                     "return",
-                    "continue", 
+                    "continue",
                     "break",
                     "if",
                     "else"]
