@@ -1,12 +1,13 @@
-import subprocess
 import os
-
+import subprocess
+import json
 
 def report(not_killed_mutants=[], folder="", original_file=""):
-    # Define the filenames
-    markdown_file = 'diff_not_killed.md'
-    # Initialize a variable to hold the diff output
-    diff_content = ""
+    # Define the JSON structure
+    report_data = {
+        "filename": original_file,
+        "diffs": []
+    }
 
     if "test/" in original_file:
         start_index = original_file.find("test/")
@@ -22,14 +23,12 @@ def report(not_killed_mutants=[], folder="", original_file=""):
             # Use git diff --no-index to compare the files and capture the output
             result = subprocess.run(['git', 'diff', '--no-index', original_file, modified_file], capture_output=True, text=True)
 
-            # Append the diff output to the diff_content
-            diff_content += f"## Diff between {original_file} and {filename}\n"
-            diff_content += "```diff\n"
-            diff_content += result.stdout
-            diff_content += "\n```\n"
+            # Append the diff output to the diffs list
+            report_data["diffs"].append(result.stdout)
 
-    # Write the aggregated diff output to a markdown file with proper formatting
-    with open(markdown_file, 'w') as file:
-        file.write(diff_content)
+    # Export the report as a JSON file
+    json_file = f'diff_not_killed.json'
+    with open(json_file, 'w') as file:
+        json.dump(report_data, file, indent=4)
 
-    print(f"Aggregated diff output with the survived mutants has been written to {markdown_file}")
+    print(f"Report saved to {json_file}")
