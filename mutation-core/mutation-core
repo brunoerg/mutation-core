@@ -6,6 +6,7 @@ from get_changes import (
 )
 from gen_mutations import mutate
 from analyze import analyze
+from cov import parse_coverage_file
 
 import argparse
 import os
@@ -21,9 +22,11 @@ def mkdir_mutation_folder(name):
         os.mkdir(path)
 
 
-def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mutations=False, range_lines=None):
+def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mutations=False, range_lines=None, cov=None):
+    if cov:
+        cov = parse_coverage_file(cov)
     if file:
-        mutate(file, touched_lines=None, pr_number=None, one_mutant=one_mutant, only_security_mutations=only_security_mutations, range_lines=range_lines)
+        mutate(file, touched_lines=None, pr_number=None, one_mutant=one_mutant, only_security_mutations=only_security_mutations, range_lines=range_lines, cov=cov)
         return
     files_changed = get_changed_files(pr_number)
     result = []
@@ -37,7 +40,7 @@ def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mut
             "lines_touched": lines_touched
         })
     for item in result:
-        mutate(item['file_path'], item['lines_touched'], pr_number, one_mutant, only_security_mutations)
+        mutate(file_to_mutate=item['file_path'], touched_lines=item['lines_touched'], pr_number=pr_number, one_mutant=one_mutant, only_security_mutations=only_security_mutations, cov=cov)
 
 
 def main():
@@ -47,6 +50,8 @@ def main():
     parser_mutate = subparsers.add_parser("mutate", help="Create mutants for a specific PR (0 = current branch) or file")
     parser_mutate.add_argument('-p', '--pr', dest="pr", default=0, type=int,
                                help="Bitcoin Core's PR number")
+    parser_mutate.add_argument('-c', '--cov', dest="cov", default="", type=str,
+                               help="Path for the coverage file (*.info generated with cmake -P build/Coverage.cmake)")
     parser_mutate.add_argument('-f', '--file', dest="file", default="", type=str,
                                help="File path")
     parser_mutate.add_argument('-r', '--range', dest="range_lines", type=int, default=None, nargs=2,
@@ -65,18 +70,20 @@ def main():
     if args.subcommand is None:
         parser.print_help()
     elif args.subcommand == "mutate":
+        if args.cov != "" and args.range_lines is not None:
+            sys.exit("You should only provide coverage file or the range of lines to mutate")
         if args.pr != 0 and args.file != "":
             sys.exit("You should only provide PR number or file")
         if args.pr != 0:
-            mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations)
+            mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations, cov=args.cov)
         elif args.file != "":
             range_lines = args.range_lines
             if range_lines:
                 if range_lines[0] > range_lines[1]:
                     sys.exit("Invalid range")
-            mutation_core(file=args.file, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations, range_lines=range_lines)
+            mutation_core(file=args.file, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations, range_lines=range_lines, cov=args.cov)
         else:
-            mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations)
+            mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations, cov=args.cov)
     elif args.subcommand == "analyze":
         if args.folder == "" and args.command == "":
             sys.exit("You should provide the folder which contains the mutants and the command to test them")
