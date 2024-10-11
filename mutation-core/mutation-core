@@ -64,7 +64,7 @@ def main():
     parser_analyze.add_argument('-f', '--folder', dest="folder", default="", type=str,
                                help="Folder with the mutants")
     parser_analyze.add_argument('-c', '--command', dest="command", default="", type=str,
-                               help="Command to test the mutants (e.g. make && ./test/functional/test.py)")
+                               help="Command to test the mutants (e.g. cmake --build build && ./build/test/functional/test.py)")
 
     args = parser.parse_args()
     if args.subcommand is None:
