@@ -8,7 +8,6 @@
 
 - Allows generating mutants only for the code touched or added in a specific branch (useful to test PRs) and avoid spending time by generating mutants for files from bench/test/doc/etc folders.
 - Allows generating mutants using only some security-based mutation operators. This might be good for testing fuzzing.
-
     - e.g:
     ```diff
         @@ -630,7 +630,7 @@ static void ApproximateBestSubset(FastRandomContext& insecure_rand, const std::v
@@ -46,6 +45,7 @@
 - Avoids creating useless mutants. (e.g. by skipping comments, `LogPrintf` statements...).
 - Allows generating only one mutant per line of code (might be useful for CI/CD).
 - Allows creating mutations in the functional tests.
+- Allows to create mutants only for code that is covered by tests.
 
 ...and, of course, there are some specific mutation operators designed for Bitcoin Core.
 
@@ -67,6 +67,11 @@ Create only one mutant per line (if you want faster analysis):
 ```
 
 If you do not specify either a file or PR number, it will create mutants for the touched code by the current branch you are checked out. If the specified file is a Python one, it will create mutants considering it is a functional test.
+
+You can specify a test coverage file (i.e. *.info) to create mutants only for code that is covered by tests.
+```sh
+./mutation-core mutate -f=path/to/file -c=path/to/total_coverage.info
+```
 
 The `mutate` command will create a folder with all mutants. To test them you can use:
 ```sh
