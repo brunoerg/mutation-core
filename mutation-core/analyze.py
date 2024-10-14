@@ -33,7 +33,7 @@ def analyze(folder_path, command=""):
         for file_name in files:
             if '.txt' in file_name:
                 continue
-            print(f"[{i}/{len_files}] Analyzing {file_name}")
+            print(f"[{i+1}/{len_files-1}] Analyzing {file_name}")
             # Construct the full file path
             file_path = os.path.join(folder_path, file_name)
 
@@ -59,5 +59,5 @@ def analyze(folder_path, command=""):
 
     score = len(killed) / (len(killed) + len(not_killed))
     print(f"MUTATION SCORE: {score}")
-    report(not_killed, folder_path, target_file_path)
+    report(not_killed, folder_path, target_file_path, score)
     return killed, not_killed
