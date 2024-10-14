@@ -2,10 +2,11 @@ import os
 import subprocess
 import json
 
-def report(not_killed_mutants=[], folder="", original_file=""):
+def report(not_killed_mutants=[], folder="", original_file="", score=0):
     # Define the JSON structure
     report_data = {
         "filename": original_file,
+        "mutation_score": score,
         "diffs": []
     }
 
