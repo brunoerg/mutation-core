@@ -28,7 +28,7 @@ def analyze(folder_path, command=""):
 
         # Loop through each file in the folder
         len_files = len(files)
-        print(f"* {len(files)} MUTANTS *")
+        print(f"* {len(files)-1} MUTANTS *")
         i = 0
         for file_name in files:
             if '.txt' in file_name:
