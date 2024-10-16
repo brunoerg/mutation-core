@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import os
 import subprocess
 import json
@@ -7,10 +9,12 @@ def report(not_killed_mutants=[], folder="", original_file="", score=0):
     if len(not_killed_mutants) == 0:
         return
 
+    now = datetime.now()
     # Define the JSON structure
     report_data = {
         "filename": original_file,
         "mutation_score": score,
+        "date": now.strftime("%d/%m/%Y %H:%M:%S"),
         "diffs": []
     }
 
@@ -20,6 +24,7 @@ def report(not_killed_mutants=[], folder="", original_file="", score=0):
 
     subprocess.run(['git', 'checkout', '--', original_file])
 
+    print("Surviving mutants:")
     # Iterate over all files in the directory
     for filename in os.listdir(folder):
         if filename in not_killed_mutants:
@@ -27,6 +32,8 @@ def report(not_killed_mutants=[], folder="", original_file="", score=0):
 
             # Use git diff --no-index to compare the files and capture the output
             result = subprocess.run(['git', 'diff', '--no-index', original_file, modified_file], capture_output=True, text=True)
+            print(result.stdout)
+            print("--------------")
 
             # Append the diff output to the diffs list
             report_data["diffs"].append(result.stdout)
