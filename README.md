@@ -56,7 +56,7 @@ Generate mutants for a specific file:
 ./mutation-core mutate -f=path/to/file
 ```
 
-Generate mutants for a specific PR (it will only create mutants for the touched code):
+Generate mutants for a specific PR (it will only create mutants for the touched code. You should run it into Bitcoin Core folder):
 ```sh
 ./mutation-core mutate -p=PR_NUMBER
 ```
@@ -82,13 +82,13 @@ e.g.
 ./mutation-core analyze -f=path/to/folder -c="rm -rf build && cmake -B build && cmake --build build && ./build/test/functional/foo123.py"
 ```
 
-## Mutating functional tests
+## Mutating unit and functional tests
 
 Does it make sense? Yes! See: https://github.com/trailofbits/necessist/blob/master/docs/Necessist%20Mutation%202024.pdf
 
 Of course, this tool is much simpler than necessist and designed for Bitcoin Core, but mutating tests really makes sense.
 By removing some statements and method calls, we can check whether the test passes and identify buggy tests. In our case, we 
-will not touch any `wait_for`, `wait_until`, `send_and_ping`, `assert_*` and other verifications.
+will not touch any `wait_for`, `wait_until`, `send_and_ping`, `assert_*`, `BOOST_*` and other verifications.
 
 See an example of the usage of this tool for `test/functional/p2p_compactblocks.py`.
 
@@ -101,19 +101,6 @@ See an example of the usage of this tool for `test/functional/p2p_compactblocks.
 
 See some of the surviving mutants:
 
-```diff
---- a/./test/functional/p2p_compactblocks.py
-+++ b/muts/p2p_compactblocks.mutant.205.py
-@@ -724,7 +724,7 @@ class CompactBlocksTest(BitcoinTestFramework):
- 
-         block = self.build_block_with_transactions(node, utxo, 5)
-         del block.vtx[3]
--        block.hashMerkleRoot = block.calc_merkle_root()
-         # Drop the coinbase witness but include the witness commitment.
-         add_witness_commitment(block)
-         block.vtx[0].wit.vtxinwit = []
-
-```
 
 ```diff
 --- a/./test/functional/p2p_compactblocks.py
