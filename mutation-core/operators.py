@@ -62,7 +62,6 @@ SECURITY_OPERATORS = [
     ["break", ""]
 ]
 
-FUNCTIONAL_TEST_OPERATORS = [
-    [r"self\.nodes\s*=\s*(\d+)", r"self.nodes = \1 - 1"],
+TEST_OPERATORS = [
     [r"^.*\b(?!assert\w*)\w+\s*\(.*\).*$", r""]
 ]

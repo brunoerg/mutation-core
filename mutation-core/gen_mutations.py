@@ -8,7 +8,7 @@ from random import shuffle
 from operators import (
     REGEX_OPERATORS,
     SECURITY_OPERATORS,
-    FUNCTIONAL_TEST_OPERATORS
+    TEST_OPERATORS
 )
 
 BASE_PATH = str(pathlib.Path().resolve())
@@ -37,6 +37,26 @@ DO_NOT_MUTATE_PY = ["wait_for",
                     "break",
                     "if",
                     "else"]
+
+DO_NOT_MUTATE_UNIT = ["while",
+                      "for",
+                      "if",
+                      "test_",
+                      "_test",
+                      "class",
+                      "return",
+                      "continue",
+                      "break",
+                      "if",
+                      "else",
+                      "reserve",
+                      "resize",
+                      "static",
+                      "void",
+                      "BOOST_",
+                      "LOCK(",
+                      "LOCK2(",
+                      "Test"]
 
 
 def mkdir_mutation_folder(name, file_to_mutate):
@@ -68,7 +88,9 @@ def write_mutation(file_to_mutate, lines, i, pr_number=None):
         return i + 1
 
 
-def mutate(file_to_mutate="", touched_lines=None, pr_number=None, one_mutant=False, only_security_mutations=False, range_lines=None, cov=None):
+def mutate(file_to_mutate="", touched_lines=None, pr_number=None,
+           one_mutant=False, only_security_mutations=False,
+           range_lines=None, cov=None, is_unit_test=False):
     print(f"Generating mutants for {file_to_mutate}...")
     input_file = f'{BASE_PATH}/{file_to_mutate}'
 
@@ -78,8 +100,8 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None, one_mutant=Fal
     ALL_OPS = REGEX_OPERATORS
     if only_security_mutations:
         ALL_OPS = SECURITY_OPERATORS
-    if ".py" in file_to_mutate:
-        ALL_OPS = FUNCTIONAL_TEST_OPERATORS
+    if (".py" in file_to_mutate) or is_unit_test:
+        ALL_OPS = TEST_OPERATORS
 
     touched_lines = touched_lines if touched_lines else list(range(1, len(source_code)))
     if one_mutant:
@@ -105,11 +127,17 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None, one_mutant=Fal
 
         if line_before_mutation.lstrip().startswith(tuple(DO_NOT_MUTATE)):
             continue
-        if ".py" in file_to_mutate:
-            if any(word in line_before_mutation for word in DO_NOT_MUTATE_PY):
+        if ".py" in file_to_mutate or is_unit_test:
+            do_not_mutate = any(word in line_before_mutation for word in DO_NOT_MUTATE_PY)
+            regex_to_search = re.search(r"^\s*([a-zA-Z_]\w*)\s*=\s*(.+)$", line_before_mutation)
+            if is_unit_test:
+                do_not_mutate = any(word in line_before_mutation for word in DO_NOT_MUTATE_UNIT)
+                regex_to_search = re.search(r"\b(?:[a-zA-Z_][a-zA-Z0-9_:<>*&\s]+)\s+[a-zA-Z_][a-zA-Z0-9_]*(?:\[[^\]]*\])?(?:\.(?:[a-zA-Z_][a-zA-Z0-9_]*)|\->(?:[a-zA-Z_][a-zA-Z0-9_]*))*(?:\s*=\s*[^;]+|\s*\{[^;]+\})\s*", line_before_mutation)
+            if do_not_mutate:
                 continue
-            if re.search(r"^\s*([a-zA-Z_]\w*)\s*=\s*(.+)$", line_before_mutation):
+            if regex_to_search:
                 continue
+
         mutation_done = False
         for operator in ALL_OPS:
             if re.search(operator[0], line_before_mutation):

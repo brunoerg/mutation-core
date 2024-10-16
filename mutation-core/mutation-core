@@ -22,25 +22,35 @@ def mkdir_mutation_folder(name):
         os.mkdir(path)
 
 
-def mutation_core(pr_number=None, file=None, one_mutant=False, only_security_mutations=False, range_lines=None, cov=None):
+def mutation_core(pr_number=None, file=None, one_mutant=False,
+                  only_security_mutations=False, range_lines=None,
+                  cov=None):
     if cov:
         cov = parse_coverage_file(cov)
     if file:
-        mutate(file, touched_lines=None, pr_number=None, one_mutant=one_mutant, only_security_mutations=only_security_mutations, range_lines=range_lines, cov=cov)
+        is_unit_test = 'test' in file
+        mutate(file, touched_lines=None, pr_number=None,
+               one_mutant=one_mutant, only_security_mutations=only_security_mutations,
+               range_lines=range_lines, cov=cov, is_unit_test=is_unit_test)
         return
     files_changed = get_changed_files(pr_number)
     result = []
-    for file in files_changed:
-        # Skips mutating test/doc/bench files
-        if any(f in file for f in ['test', 'doc', 'bench']) or ('.cpp' not in file and '.h' not in file):
+    for file_changed in files_changed:
+        # Skips mutating test/bench files
+        if any(f in file_changed for f in ['doc', 'bench']) or ('.cpp' not in file_changed and '.h' not in file_changed):
             continue
-        lines_touched = get_lines_touched(file)
+        lines_touched = get_lines_touched(file_changed)
+        is_unit_test = 'test' in file_changed
         result.append({
-            "file_path": file,
-            "lines_touched": lines_touched
+            "file_path": file_changed,
+            "lines_touched": lines_touched,
+            "is_unit_test": is_unit_test
         })
     for item in result:
-        mutate(file_to_mutate=item['file_path'], touched_lines=item['lines_touched'], pr_number=pr_number, one_mutant=one_mutant, only_security_mutations=only_security_mutations, cov=cov)
+        mutate(file_to_mutate=item['file_path'], touched_lines=item['lines_touched'],
+               pr_number=pr_number, one_mutant=one_mutant,
+               only_security_mutations=only_security_mutations, 
+               cov=cov, is_unit_test=item["is_unit_test"])
 
 
 def main():
@@ -81,9 +91,11 @@ def main():
             if range_lines:
                 if range_lines[0] > range_lines[1]:
                     sys.exit("Invalid range")
-            mutation_core(file=args.file, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations, range_lines=range_lines, cov=args.cov)
+            mutation_core(file=args.file, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations,
+                          range_lines=range_lines, cov=args.cov)
         else:
-            mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations, cov=args.cov)
+            mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations,
+                          cov=args.cov)
     elif args.subcommand == "analyze":
         if args.folder == "" and args.command == "":
             sys.exit("You should provide the folder which contains the mutants and the command to test them")

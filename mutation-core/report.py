@@ -3,6 +3,10 @@ import subprocess
 import json
 
 def report(not_killed_mutants=[], folder="", original_file="", score=0):
+    # Skips creating a report file if mutation score is 100%
+    if len(not_killed_mutants) == 0:
+        return
+
     # Define the JSON structure
     report_data = {
         "filename": original_file,
@@ -10,7 +14,7 @@ def report(not_killed_mutants=[], folder="", original_file="", score=0):
         "diffs": []
     }
 
-    if "test/" in original_file:
+    if "test/" in original_file and ".cpp" not in original_file:
         start_index = original_file.find("test/")
         original_file = original_file[start_index:] if start_index != -1 else None
 
