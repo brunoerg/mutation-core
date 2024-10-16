@@ -24,7 +24,7 @@ def mkdir_mutation_folder(name):
 
 def mutation_core(pr_number=None, file=None, one_mutant=False,
                   only_security_mutations=False, range_lines=None,
-                  cov=None):
+                  cov=None, test_only=False):
     if cov:
         cov = parse_coverage_file(cov)
     if file:
@@ -41,6 +41,8 @@ def mutation_core(pr_number=None, file=None, one_mutant=False,
             continue
         lines_touched = get_lines_touched(file_changed)
         is_unit_test = 'test' in file_changed
+        if test_only and not (is_unit_test or '.py' in file_changed):
+            continue
         result.append({
             "file_path": file_changed,
             "lines_touched": lines_touched,
@@ -60,6 +62,8 @@ def main():
     parser_mutate = subparsers.add_parser("mutate", help="Create mutants for a specific PR (0 = current branch) or file")
     parser_mutate.add_argument('-p', '--pr', dest="pr", default=0, type=int,
                                help="Bitcoin Core's PR number")
+    parser_mutate.add_argument('-t', '--test-only', dest="test_only", default=False, type=bool,
+                               help="Only create mutants for unit and functional tests")
     parser_mutate.add_argument('-c', '--cov', dest="cov", default="", type=str,
                                help="Path for the coverage file (*.info generated with cmake -P build/Coverage.cmake)")
     parser_mutate.add_argument('-f', '--file', dest="file", default="", type=str,
@@ -84,8 +88,12 @@ def main():
             sys.exit("You should only provide coverage file or the range of lines to mutate")
         if args.pr != 0 and args.file != "":
             sys.exit("You should only provide PR number or file")
+        if args.pr == 0 and args.test_only:
+            sys.exit("You should set --test-only just when using --pr")
         if args.pr != 0:
-            mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations, cov=args.cov)
+            mutation_core(pr_number=args.pr, one_mutant=args.one_mutant,
+                          only_security_mutations=args.only_security_mutations,
+                          cov=args.cov, test_only=args.test_only)
         elif args.file != "":
             range_lines = args.range_lines
             if range_lines:
