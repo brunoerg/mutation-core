@@ -8,18 +8,21 @@ def run_git_command(cmd):
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         return result.stdout.splitlines()
     except subprocess.CalledProcessError as e:
-        print(f"Error running command: {' '.join(cmd)}\n{e.stderr}")
-        sys.exit(1)
+        return False
 
 
 def get_changed_files(pr_number=None):
     if pr_number:
         """Get the list of files changed in the pull request."""
         cmd = ['git', 'fetch', 'upstream', f'pull/{pr_number}/head:pr/{pr_number}']
-        run_git_command(cmd)
-
-        cmd = ['git', 'checkout', f'pr/{pr_number}']
-        run_git_command(cmd)
+        git_run = run_git_command(cmd)
+        if git_run == False:
+            print("Fetching and updating branch...")
+            cmd = ['git', 'rebase', f'pr/{pr_number}']
+        else:
+            print("Checking out...")
+            cmd = ['git', 'checkout', f'pr/{pr_number}']
+            run_git_command(cmd)
 
     cmd = ['git', 'diff', '--name-only', 'upstream/master...HEAD']
     files = run_git_command(cmd)
