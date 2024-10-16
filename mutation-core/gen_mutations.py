@@ -56,7 +56,10 @@ DO_NOT_MUTATE_UNIT = ["while",
                       "BOOST_",
                       "LOCK(",
                       "LOCK2(",
-                      "Test"]
+                      "Test",
+                      "Assert",
+                      "EXCLUSIVE_LOCKS_REQUIRED",
+                      "catch"]
 
 
 def mkdir_mutation_folder(name, file_to_mutate):
