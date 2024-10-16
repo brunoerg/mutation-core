@@ -66,6 +66,11 @@ Create only one mutant per line (if you want faster analysis):
 ./mutation-core mutate -p=PR_NUMBER --one_mutant=1
 ```
 
+If you want to create mutants only for unit or functional tests touched by a PR:
+```sh
+./mutation-core mutate -p=PR_NUMBER --test_only=1
+```
+
 If you do not specify either a file or PR number, it will create mutants for the touched code by the current branch you are checked out. If the specified file is a Python one, it will create mutants considering it is a functional test.
 
 You can specify a test coverage file (i.e. *.info) to create mutants only for code that is covered by tests.
