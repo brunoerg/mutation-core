@@ -28,7 +28,7 @@ def mutation_core(pr_number=None, file=None, one_mutant=False,
     if cov:
         cov = parse_coverage_file(cov)
     if file:
-        is_unit_test = 'test' in file
+        is_unit_test = 'test' in file and 'py' not in file
         mutate(file, touched_lines=None, pr_number=None,
                one_mutant=one_mutant, only_security_mutations=only_security_mutations,
                range_lines=range_lines, cov=cov, is_unit_test=is_unit_test)
@@ -40,7 +40,7 @@ def mutation_core(pr_number=None, file=None, one_mutant=False,
         if any(f in file_changed for f in ['doc', 'fuzz', 'bench']) or ('.cpp' not in file_changed and '.h' not in file_changed):
             continue
         lines_touched = get_lines_touched(file_changed)
-        is_unit_test = 'test' in file_changed
+        is_unit_test = 'test' in file_changed and 'py' not in file
         if test_only and not (is_unit_test or '.py' in file_changed):
             continue
         result.append({
@@ -105,7 +105,7 @@ def main():
             mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations,
                           cov=args.cov)
     elif args.subcommand == "analyze":
-        if args.folder == "" and args.command == "":
+        if args.folder == "" or args.command == "":
             sys.exit("You should provide the folder which contains the mutants and the command to test them")
         analyze(folder_path=args.folder, command=args.command)
     else:
