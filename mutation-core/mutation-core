@@ -37,7 +37,7 @@ def mutation_core(pr_number=None, file=None, one_mutant=False,
     result = []
     for file_changed in files_changed:
         # Skips mutating test/bench files
-        if any(f in file_changed for f in ['doc', 'bench']) or ('.cpp' not in file_changed and '.h' not in file_changed):
+        if any(f in file_changed for f in ['doc', 'fuzz', 'bench']) or ('.cpp' not in file_changed and '.h' not in file_changed):
             continue
         lines_touched = get_lines_touched(file_changed)
         is_unit_test = 'test' in file_changed
