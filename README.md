@@ -44,10 +44,19 @@
     ```
 - Avoids creating useless mutants. (e.g. by skipping comments, `LogPrintf` statements...).
 - Allows generating only one mutant per line of code (might be useful for CI/CD).
-- Allows creating mutations in the functional tests.
+- Allows creating mutants for the functional and unit tests.
 - Allows to create mutants only for code that is covered by tests.
 
 ...and, of course, there are some specific mutation operators designed for Bitcoin Core.
+
+## How to use (simplest way)
+
+```sh
+cd bitcoin
+git checkout branch # if needed - it can be your local working branch or some PR branch
+./mutation-core mutate
+./mutation-core analyze
+```
 
 ## How to use
 
@@ -78,20 +87,27 @@ You can specify a test coverage file (i.e. *.info) to create mutants only for co
 ./mutation-core mutate -f=path/to/file -c=path/to/total_coverage.info
 ```
 
-The `mutate` command will create a folder with all mutants. To test them you can use:
+The `mutate` command will create folders with mutants (one folder per mutated file). To test them you can run:
+
 ```sh
 ./mutation-core analyze -f=path/to/folder -c="command to test each mutant"
 ```
 e.g.
 ```sh
-./mutation-core analyze -f=path/to/folder -c="rm -rf build && cmake -B build && cmake --build build && ./build/test/functional/foo123.py"
+./mutation-core analyze -f=path/to/folder -c="cmake --build build && ./build/test/functional/foo123.py"
 ```
+
+Or simply...
+```sh
+./mutation-core analyze
+```
+
+By not specifying the command, the tool will test every mutant by running all the unit and functional tests. In case the mutated file is a test one, it will simply run that specific test.
 
 ## Mutating unit and functional tests
 
 Does it make sense? Yes! See: https://github.com/trailofbits/necessist/blob/master/docs/Necessist%20Mutation%202024.pdf
 
-Of course, this tool is much simpler than necessist and designed for Bitcoin Core, but mutating tests really makes sense.
 By removing some statements and method calls, we can check whether the test passes and identify buggy tests. In our case, we 
 will not touch any `wait_for`, `wait_until`, `send_and_ping`, `assert_*`, `BOOST_*` and other verifications.
 

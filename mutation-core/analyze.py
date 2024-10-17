@@ -21,6 +21,20 @@ def analyze(folder_path, command=""):
     with open(os.path.join(folder_path, 'original_file.txt'), 'r') as file:
         target_file_path = file.readline()
 
+    if command == "":
+        build_command = "cmake -B build"
+        print(f"Running {build_command}")
+        run(build_command)
+
+        if "functional" in target_file_path:
+            command = f"./build/{target_file_path}"
+        elif "test" in target_file_path:
+            filename_with_extension = os.path.basename(target_file_path)
+            test_to_run = filename_with_extension.rsplit('.', 1)[0]
+            command = f"cmake --build build && ./build/src/test/test_bitcoin --run_test={test_to_run}"
+        else:
+            command = f"cmake --build build && ./build/src/test/test_bitcoin && ./build/test/functional/test_runner.py"
+
     try:
         # Get list of files in the folder
         files = [f for f in os.listdir(folder_path)
@@ -45,6 +59,7 @@ def analyze(folder_path, command=""):
             with open(target_file_path, 'w') as target_file:
                 target_file.write(content)
 
+            print(f"Running: {command}")
             result = run(command)
             if result:
                 print("NOT KILLED ❌")

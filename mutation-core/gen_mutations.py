@@ -81,9 +81,11 @@ def write_mutation(file_to_mutate, lines, i, pr_number=None):
     file_name = file_name[len(file_name) - 1].split('.')[0]
 
     folder = "muts"
+    ext = file_extension.replace('.', '')
     if pr_number:
-        ext = file_extension.replace('.', '')
         folder = f'muts-pr-{pr_number}-{file_name}-{ext}'
+    else:
+        folder = folder + f'-{file_name}-{ext}'
     mkdir_mutation_folder(folder, file_to_mutate)
     mutator_file = f'{BASE_PATH}/{folder}/{file_name}.mutant.{i}{file_extension}'
     with open(mutator_file, 'w', encoding="utf8") as file:

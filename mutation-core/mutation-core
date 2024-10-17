@@ -37,10 +37,10 @@ def mutation_core(pr_number=None, file=None, one_mutant=False,
     result = []
     for file_changed in files_changed:
         # Skips mutating test/bench files
-        if any(f in file_changed for f in ['doc', 'fuzz', 'bench']) or ('.cpp' not in file_changed and '.h' not in file_changed):
+        if any(f in file_changed for f in ['doc', 'fuzz', 'bench']) or '.txt' in file_changed:
             continue
         lines_touched = get_lines_touched(file_changed)
-        is_unit_test = 'test' in file_changed and 'py' not in file
+        is_unit_test = 'test' in file_changed and 'py' not in file_changed
         if test_only and not (is_unit_test or '.py' in file_changed):
             continue
         result.append({
@@ -88,8 +88,6 @@ def main():
             sys.exit("You should only provide coverage file or the range of lines to mutate")
         if args.pr != 0 and args.file != "":
             sys.exit("You should only provide PR number or file")
-        if args.pr == 0 and args.test_only:
-            sys.exit("You should set --test-only just when using --pr")
         if args.pr != 0:
             mutation_core(pr_number=args.pr, one_mutant=args.one_mutant,
                           only_security_mutations=args.only_security_mutations,
@@ -103,11 +101,19 @@ def main():
                           range_lines=range_lines, cov=args.cov)
         else:
             mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations,
-                          cov=args.cov)
+                          cov=args.cov, test_only=args.test_only)
     elif args.subcommand == "analyze":
-        if args.folder == "" or args.command == "":
-            sys.exit("You should provide the folder which contains the mutants and the command to test them")
-        analyze(folder_path=args.folder, command=args.command)
+        # When the folder is not specified, try to find all muts* folder 
+        if args.folder == "":
+            folders_starting_with_muts = []
+            for root, dirs, _ in os.walk('.'):
+                for folder in dirs:
+                    if folder.startswith("muts"):
+                        folders_starting_with_muts.append(os.path.join(root, folder))
+            for folder in folders_starting_with_muts:
+                analyze(folder_path=folder, command=args.command)
+        else:
+            analyze(folder_path=args.folder, command=args.command)
     else:
         parser.print_help()
         sys.exit("No command provided.")
