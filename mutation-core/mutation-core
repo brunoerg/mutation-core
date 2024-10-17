@@ -37,7 +37,7 @@ def mutation_core(pr_number=None, file=None, one_mutant=False,
     result = []
     for file_changed in files_changed:
         # Skips mutating test/bench files
-        if any(f in file_changed for f in ['doc', 'fuzz', 'bench']):
+        if any(f in file_changed for f in ['doc', 'fuzz', 'bench']) or '.txt' in file_changed:
             continue
         lines_touched = get_lines_touched(file_changed)
         is_unit_test = 'test' in file_changed and 'py' not in file_changed
@@ -105,7 +105,7 @@ def main():
             mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations,
                           cov=args.cov)
     elif args.subcommand == "analyze":
-        # TODO When the folder is not specified, try to find all muts* folder 
+        # When the folder is not specified, try to find all muts* folder 
         if args.folder == "":
             folders_starting_with_muts = []
             for root, dirs, _ in os.walk('.'):
