@@ -36,7 +36,8 @@ DO_NOT_MUTATE_PY = ["wait_for",
                     "continue",
                     "break",
                     "if",
-                    "else"]
+                    "else",
+                    "assert"]
 
 DO_NOT_MUTATE_UNIT = ["while",
                       "for",
