@@ -33,7 +33,7 @@ def analyze(folder_path, command=""):
             test_to_run = filename_with_extension.rsplit('.', 1)[0]
             command = f"cmake --build build && ./build/src/test/test_bitcoin --run_test={test_to_run}"
         else:
-            command = f"cmake --build build && ./build/test/functional/test_runner.py"
+            command = f"cmake --build build && ./build/src/test/test_bitcoin && ./build/test/functional/test_runner.py"
 
     try:
         # Get list of files in the folder
