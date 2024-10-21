@@ -12,7 +12,17 @@ def run(command):
         return True
     except subprocess.CalledProcessError:
         return False
-
+    
+def get_command_to_kill(target_file_path):
+    if "functional" in target_file_path:
+        command = f"./build/{target_file_path}"
+    elif "test" in target_file_path:
+        filename_with_extension = os.path.basename(target_file_path)
+        test_to_run = filename_with_extension.rsplit('.', 1)[0]
+        command = f"cmake --build build && ./build/src/test/test_bitcoin --run_test={test_to_run}"
+    else:
+        command = f"cmake --build build && ./build/src/test/test_bitcoin && CI_FAILFAST_TEST_LEAVE_DANGLING=1 ./build/test/functional/test_runner.py -F"
+    return command
 
 def analyze(folder_path, command=""):
     killed = []
@@ -22,18 +32,10 @@ def analyze(folder_path, command=""):
         target_file_path = file.readline()
 
     if command == "":
-        build_command = "cmake -B build"
+        build_command = "rm -rf build && cmake -B build"
         print(f"Running {build_command}")
         run(build_command)
-
-        if "functional" in target_file_path:
-            command = f"./build/{target_file_path}"
-        elif "test" in target_file_path:
-            filename_with_extension = os.path.basename(target_file_path)
-            test_to_run = filename_with_extension.rsplit('.', 1)[0]
-            command = f"cmake --build build && ./build/src/test/test_bitcoin --run_test={test_to_run}"
-        else:
-            command = f"cmake --build build && ./build/src/test/test_bitcoin && CI_FAILFAST_TEST_LEAVE_DANGLING=1 ./build/test/functional/test_runner.py -F"
+        command = get_command_to_kill(target_file_path)
 
     try:
         # Get list of files in the folder
