@@ -40,7 +40,7 @@ def mutation_core(pr_number=None, file=None, one_mutant=False,
         if any(f in file_changed for f in ['doc', 'fuzz', 'bench']) or '.txt' in file_changed:
             continue
         lines_touched = get_lines_touched(file_changed)
-        is_unit_test = 'test' in file_changed and 'py' not in file_changed
+        is_unit_test = 'test' in file_changed and ('py' not in file_changed and 'util' not in file_changed)
         if test_only and not (is_unit_test or '.py' in file_changed):
             continue
         result.append({
