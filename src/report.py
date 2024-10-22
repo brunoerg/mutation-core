@@ -4,7 +4,7 @@ import os
 import subprocess
 import json
 
-def report(not_killed_mutants=[], folder="", original_file="", score=0):
+def generate_report(not_killed_mutants=[], folder="", original_file="", score=0):
     # Skips creating a report file if mutation score is 100%
     if len(not_killed_mutants) == 0:
         return

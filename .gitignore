@@ -1,2 +1,4 @@
 __pycache__
 venv
+dist
+mutation_core.egg-info

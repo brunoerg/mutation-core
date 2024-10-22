@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from get_changes import (
+from src.get_changes import (
     get_changed_files,
     get_lines_touched
 )
-from gen_mutations import mutate
-from analyze import analyze
-from cov import parse_coverage_file
+from src.gen_mutations import mutate
+from src.analyze import analyze
+from src.cov import parse_coverage_file
 
 import argparse
 import os

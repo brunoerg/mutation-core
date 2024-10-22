@@ -1,7 +1,7 @@
-import unittest
 import os
+import unittest
 
-from ..cov import parse_coverage_file
+from src.cov import parse_coverage_file
 
 
 class TestCoverage(unittest.TestCase):

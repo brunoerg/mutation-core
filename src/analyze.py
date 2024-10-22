@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-from report import report
+from src.report import generate_report
 
 
 # False == mutant killed
@@ -76,5 +76,5 @@ def analyze(folder_path, command=""):
 
     score = len(killed) / (len(killed) + len(not_killed))
     print(f"MUTATION SCORE: {score}")
-    report(not_killed, folder_path, target_file_path, score)
+    generate_report(not_killed, folder_path, target_file_path, score)
     return killed, not_killed
