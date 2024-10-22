@@ -1,5 +1,4 @@
 import subprocess
-import sys
 
 
 def run_git_command(cmd):
