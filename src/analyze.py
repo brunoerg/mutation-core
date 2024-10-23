@@ -1,5 +1,6 @@
 import subprocess
 import os
+import traceback
 
 from report import generate_report
 
@@ -8,7 +9,7 @@ from report import generate_report
 def run(command):
     try:
         subprocess.run(command, check=True, stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE, text=True, shell=True)
+                       stderr=subprocess.PIPE, text=False, shell=True)
         return True
     except subprocess.CalledProcessError:
         return False
@@ -75,6 +76,7 @@ def analyze(folder_path, command="", jobs=0):
             i += 1
 
     except Exception as e:
+        traceback.print_exc()
         print(f"An error occurred: {e}")
 
     score = len(killed) / (len(killed) + len(not_killed))
