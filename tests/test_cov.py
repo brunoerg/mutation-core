@@ -14,7 +14,7 @@ class TestCoverage(unittest.TestCase):
 
     def test_parse_wrong_coverage_file(self):
         with self.assertRaises(FileNotFoundError):
-            parse_coverage_file('total_coverage.info')
+            parse_coverage_file('total_coverage_fake.info')
 
 
 if __name__ == '__main__':
