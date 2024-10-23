@@ -61,7 +61,7 @@ pip install mutation-core
 cd bitcoin
 git checkout branch # if needed - it can be your local working branch or some PR branch
 mutation-core mutate
-mutation-core analyze
+mutation-core analyze # set -j=N to setup a number of jobs to compile Bitcoin Core
 ```
 
 ## How to use

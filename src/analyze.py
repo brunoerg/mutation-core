@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-from src.report import generate_report
+from report import generate_report
 
 
 # False == mutant killed
@@ -13,18 +13,21 @@ def run(command):
     except subprocess.CalledProcessError:
         return False
     
-def get_command_to_kill(target_file_path):
+def get_command_to_kill(target_file_path, jobs):
+    build_command = "cmake --build build"
+    if jobs != 0:
+        build_command += f' -j{jobs}'
     if "functional" in target_file_path:
         command = f"./build/{target_file_path}"
     elif "test" in target_file_path:
         filename_with_extension = os.path.basename(target_file_path)
         test_to_run = filename_with_extension.rsplit('.', 1)[0]
-        command = f"cmake --build build && ./build/src/test/test_bitcoin --run_test={test_to_run}"
+        command = f"{build_command} && ./build/src/test/test_bitcoin --run_test={test_to_run}"
     else:
-        command = f"cmake --build build && ./build/src/test/test_bitcoin && CI_FAILFAST_TEST_LEAVE_DANGLING=1 ./build/test/functional/test_runner.py -F"
+        command = f"{build_command} && ./build/src/test/test_bitcoin && CI_FAILFAST_TEST_LEAVE_DANGLING=1 ./build/test/functional/test_runner.py -F -j5"
     return command
 
-def analyze(folder_path, command=""):
+def analyze(folder_path, command="", jobs=0):
     killed = []
     not_killed = []
 
@@ -33,9 +36,9 @@ def analyze(folder_path, command=""):
 
     if command == "":
         build_command = "rm -rf build && cmake -B build"
-        print(f"Running {build_command}")
+        print(f"\n\nRunning {build_command}")
         run(build_command)
-        command = get_command_to_kill(target_file_path)
+        command = get_command_to_kill(target_file_path, jobs)
 
     try:
         # Get list of files in the folder
@@ -75,6 +78,6 @@ def analyze(folder_path, command=""):
         print(f"An error occurred: {e}")
 
     score = len(killed) / (len(killed) + len(not_killed))
-    print(f"MUTATION SCORE: {score}")
+    print(f"\nMUTATION SCORE: {round(score * 100, 2)}%\n")
     generate_report(not_killed, folder_path, target_file_path, score)
     return killed, not_killed
