@@ -5,7 +5,7 @@ import re
 import os
 
 from random import shuffle
-from src.operators import (
+from operators import (
     REGEX_OPERATORS,
     SECURITY_OPERATORS,
     TEST_OPERATORS
@@ -26,6 +26,7 @@ DO_NOT_MUTATE = ["//",
 DO_NOT_MUTATE_PY = ["wait_for",
                     "wait_until",
                     "check_",
+                    "for",
                     "expected_error",
                     "def",
                     "send_and_ping",
