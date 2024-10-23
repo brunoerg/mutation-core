@@ -1,10 +1,9 @@
+import os
+import json
+import subprocess
 from datetime import datetime
 
-import os
-import subprocess
-import json
-
-def generate_report(not_killed_mutants=[], folder="", original_file="", score=0):
+def generate_report(not_killed_mutants=[], folder="", original_file="", score=0, just_append=True):
     # Skips creating a report file if mutation score is 100%
     if len(not_killed_mutants) == 0:
         return
@@ -40,10 +39,21 @@ def generate_report(not_killed_mutants=[], folder="", original_file="", score=0)
             # Append the diff output to the diffs list
             report_data["diffs"].append(result.stdout)
 
-    # Export the report as a JSON file
-    original_file = original_file.replace(".cpp", "").replace(".py", "").replace("/", "-")
-    json_file = f'diff_not_killed-{original_file}.json'
-    with open(json_file, 'w') as file:
-        json.dump(report_data, file, indent=4)
+    # Check if we should append to an existing file or create a new one
+    json_file = 'diff_not_killed.json' if just_append else f'diff_not_killed-{original_file.replace(".cpp", "").replace(".py", "").replace("/", "-")}.json'
 
-    print(f"Report saved to {json_file}")
+    if just_append and os.path.exists(json_file):
+        # Load existing data if the file exists
+        with open(json_file, 'r', errors='ignore') as file:
+            existing_data = json.load(file)
+        if isinstance(existing_data, list):
+            existing_data.append(report_data)
+        else:
+            existing_data = [existing_data, report_data]
+    else:
+        # Start with fresh data
+        existing_data = [report_data] if just_append else report_data
+
+    # Save to the JSON file
+    with open(json_file, 'w') as file:
+        json.dump(existing_data, file, indent=4)
