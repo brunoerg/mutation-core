@@ -49,57 +49,63 @@
 
 ...and, of course, there are some specific mutation operators designed for Bitcoin Core.
 
+## Installing
+
+```sh
+pip install mutation-core
+```
+
 ## How to use (simplest way)
 
 ```sh
 cd bitcoin
 git checkout branch # if needed - it can be your local working branch or some PR branch
-./mutation-core mutate
-./mutation-core analyze
+mutation-core mutate
+mutation-core analyze
 ```
 
 ## How to use
 
 Generate mutants for a specific file:
 ```sh
-./mutation-core mutate -f=path/to/file
+mutation-core mutate -f=path/to/file
 ```
 
 Generate mutants for a specific PR (it will only create mutants for the touched code. You should run it into Bitcoin Core folder):
 ```sh
-./mutation-core mutate -p=PR_NUMBER
+mutation-core mutate -p=PR_NUMBER
 ```
 
 Create only one mutant per line (if you want faster analysis):
 ```sh
-./mutation-core mutate -p=PR_NUMBER --one_mutant=1
+mutation-core mutate -p=PR_NUMBER --one_mutant=1
 ```
 
 If you want to create mutants only for unit or functional tests touched by a PR:
 ```sh
-./mutation-core mutate -p=PR_NUMBER --test_only=1
+mutation-core mutate -p=PR_NUMBER --test_only=1
 ```
 
 If you do not specify either a file or PR number, it will create mutants for the touched code by the current branch you are checked out. If the specified file is a Python one, it will create mutants considering it is a functional test.
 
 You can specify a test coverage file (i.e. *.info) to create mutants only for code that is covered by tests.
 ```sh
-./mutation-core mutate -f=path/to/file -c=path/to/total_coverage.info
+mutation-core mutate -f=path/to/file -c=path/to/total_coverage.info
 ```
 
 The `mutate` command will create folders with mutants (one folder per mutated file). To test them you can run:
 
 ```sh
-./mutation-core analyze -f=path/to/folder -c="command to test each mutant"
+mutation-core analyze -f=path/to/folder -c="command to test each mutant"
 ```
 e.g.
 ```sh
-./mutation-core analyze -f=path/to/folder -c="cmake --build build && ./build/test/functional/foo123.py"
+mutation-core analyze -f=path/to/folder -c="cmake --build build && ./build/test/functional/foo123.py"
 ```
 
 Or simply...
 ```sh
-./mutation-core analyze
+mutation-core analyze
 ```
 
 By not specifying the command, the tool will test every mutant by running all the unit and functional tests. In case the mutated file is a test one, it will simply run that specific test.
@@ -114,10 +120,10 @@ will not touch any `wait_for`, `wait_until`, `send_and_ping`, `assert_*`, `BOOST
 See an example of the usage of this tool for `test/functional/p2p_compactblocks.py`.
 
 ```bash
-./mutation-core mutate -f="./test/functional/p2p_compactblocks.py"
+mutation-core mutate -f="./test/functional/p2p_compactblocks.py"
 ```
 ```bash
-./mutation-core analyze -f="muts" -c="./test/functional/p2p_compactblocks.py"
+mutation-core analyze -f="muts" -c="./test/functional/p2p_compactblocks.py"
 ```
 
 See some of the surviving mutants:
