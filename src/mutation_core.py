@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from get_changes import (
+from src.get_changes import (
     get_changed_files,
     get_lines_touched
 )

@@ -5,7 +5,7 @@ import re
 import os
 
 from random import shuffle
-from operators import (
+from src.operators import (
     REGEX_OPERATORS,
     SECURITY_OPERATORS,
     TEST_OPERATORS

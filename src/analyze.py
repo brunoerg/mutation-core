@@ -2,7 +2,7 @@ import subprocess
 import os
 import traceback
 
-from report import generate_report
+from src.report import generate_report
 
 
 # False == mutant killed
@@ -25,7 +25,7 @@ def get_command_to_kill(target_file_path, jobs):
         test_to_run = filename_with_extension.rsplit('.', 1)[0]
         command = f"{build_command} && ./build/src/test/test_bitcoin --run_test={test_to_run}"
     else:
-        command = f"{build_command} && ./build/src/test/test_bitcoin && CI_FAILFAST_TEST_LEAVE_DANGLING=1 ./build/test/functional/test_runner.py -F -j5"
+        command = f"{build_command} && ./build/src/test/test_bitcoin && CI_FAILFAST_TEST_LEAVE_DANGLING=1 ./build/test/functional/test_runner.py -F"
     return command
 
 def analyze(folder_path, command="", jobs=0):

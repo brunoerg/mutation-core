@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name='mutation-core',
-    version='0.1.1',
-    packages=find_packages(),
+    version='0.1.2',
     install_requires=[],
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'mutation-core=src.mutation_core:main',

@@ -11,7 +11,7 @@ class TestAnalyze(unittest.TestCase):
             'test/functional/feature_addrman.py': './build/test/functional/feature_addrman.py'
         }
         for files, command in files_and_command.items():
-            self.assertEqual(get_command_to_kill(files), command)
+            self.assertEqual(get_command_to_kill(files, jobs=0), command)
 
 
 if __name__ == '__main__':
