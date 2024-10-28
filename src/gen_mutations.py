@@ -31,10 +31,20 @@ DO_NOT_MUTATE_PY = ["wait_for",
                     "def",
                     "send_and_ping",
                     "test_",
-                    "sync_with_ping",
+                    "rehash",
+                    "start_",
+                    "solve()",
+                    "rehash",
+                    "restart_",
+                    "stop_",
+                    "connect_",
+                    "sync_",
+                    "restart_",
                     "class",
                     "return",
+                    "generate("
                     "continue",
+                    "sleep",
                     "break",
                     "getcontext().prec",
                     "if",
@@ -111,6 +121,8 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None,
         ALL_OPS = SECURITY_OPERATORS
     if (".py" in file_to_mutate) or is_unit_test:
         ALL_OPS = TEST_OPERATORS
+
+    print(file_to_mutate)
 
     touched_lines = touched_lines if touched_lines else list(range(1, len(source_code)))
     if one_mutant:
