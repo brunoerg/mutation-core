@@ -36,7 +36,7 @@ def analyze(folder_path, command="", jobs=0):
         target_file_path = file.readline()
 
     if command == "":
-        build_command = "rm -rf build && cmake -B build"
+        build_command = "rm -rf build && cmake -B build && cmake --build build"
         print(f"\n\nRunning {build_command}")
         run(build_command)
         command = get_command_to_kill(target_file_path, jobs)
