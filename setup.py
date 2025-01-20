@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mutation-core',
-    version='0.1.2',
+    version='0.1.3',
     install_requires=[],
     packages=find_packages(),
     entry_points={
@@ -12,7 +12,7 @@ setup(
     },
     author='Bruno Garcia',
     author_email='brunoely.gc@gmail.com',
-    description='A mutation testing tool for Bitcoin Core',
+    description='Mutation testing tool for Bitcoin Core',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     python_requires='>=3.8',  # Minimum Python version
