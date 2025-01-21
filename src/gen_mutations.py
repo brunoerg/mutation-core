@@ -21,7 +21,8 @@ DO_NOT_MUTATE = ["//",
                  "Assume",
                  "/*",
                  "LogPrintf",
-                 "LogPrint"]
+                 "LogPrint",
+                 "G_FUZZING"]
 
 DO_NOT_MUTATE_PY = ["wait_for",
                     "wait_until",
