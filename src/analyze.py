@@ -6,10 +6,11 @@ from src.report import generate_report
 
 
 # False == mutant killed
-def run(command):
+def run(command, timeout=10000):
     try:
         subprocess.run(command, check=True, stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE, text=False, shell=True)
+                       stderr=subprocess.PIPE, text=False, shell=True,
+                       timeout=timeout)
         return True
     except subprocess.CalledProcessError:
         return False
@@ -28,7 +29,7 @@ def get_command_to_kill(target_file_path, jobs):
         command = f"{build_command} && ./build/src/test/test_bitcoin && CI_FAILFAST_TEST_LEAVE_DANGLING=1 ./build/test/functional/test_runner.py -F"
     return command
 
-def analyze(folder_path, command="", jobs=0):
+def analyze(folder_path, command="", jobs=0, timeout=1000):
     killed = []
     not_killed = []
 
@@ -66,7 +67,7 @@ def analyze(folder_path, command="", jobs=0):
                 target_file.write(content)
 
             print(f"Running: {command}")
-            result = run(command)
+            result = run(command, timeout)
             if result:
                 print("NOT KILLED ❌")
                 not_killed.append(file_name)

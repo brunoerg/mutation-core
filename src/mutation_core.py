@@ -77,6 +77,8 @@ def main():
     parser_analyze = subparsers.add_parser("analyze", help="Analyze mutants")
     parser_analyze.add_argument('-f', '--folder', dest="folder", default="", type=str,
                                help="Folder with the mutants")
+    parser_analyze.add_argument('-t', '--timeout', dest="timeout", default=1000, type=int,
+                               help="Timeout value per mutant")
     parser_analyze.add_argument('-j', '--jobs', dest="jobs", default=0, type=int,
                                help="Number of jobs to be used to compile Bitcoin Core")
     parser_analyze.add_argument('-c', '--command', dest="command", default="", type=str,
@@ -113,9 +115,9 @@ def main():
                     if folder.startswith("muts"):
                         folders_starting_with_muts.append(os.path.join(root, folder))
             for folder in folders_starting_with_muts:
-                analyze(folder_path=folder, command=args.command, jobs=args.jobs)
+                analyze(folder_path=folder, command=args.command, jobs=args.jobs, timeout=args.timeout)
         else:
-            analyze(folder_path=args.folder, command=args.command, jobs=args.jobs)
+            analyze(folder_path=args.folder, command=args.command, jobs=args.jobs, timeout=args.timeout)
     else:
         parser.print_help()
         sys.exit("No command provided.")
