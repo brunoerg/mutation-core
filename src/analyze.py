@@ -12,7 +12,7 @@ def run(command, timeout=10000):
                        stderr=subprocess.PIPE, text=False, shell=True,
                        timeout=timeout)
         return True
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return False
     
 def get_command_to_kill(target_file_path, jobs):
