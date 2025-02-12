@@ -1,7 +1,10 @@
 import unittest
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.analyze import get_command_to_kill
-
 
 class TestAnalyze(unittest.TestCase):
     def test_get_command_to_kill(self):
