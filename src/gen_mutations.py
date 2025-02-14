@@ -165,8 +165,8 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None,
             if re.search(operator[0], line_before_mutation):
                 operators_sub = [operator[1]]
                 for op_sub in operators_sub:
-                    line_mutated = re.sub(operator[0], op_sub, line_before_mutation)
-                    lines[line_num] = f'{line_before_mutation[:-len(line_before_mutation.lstrip())]}{line_mutated}'
+                    line_mutated = re.sub(operator[0], op_sub, line_before_mutation.lstrip())
+                    lines[line_num] = line_before_mutation[:-len(line_before_mutation.lstrip())] + line_mutated
                     i = write_mutation(file_to_mutate, lines, i, pr_number)
                     if one_mutant:
                         mutation_done = True
