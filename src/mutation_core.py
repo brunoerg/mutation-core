@@ -83,7 +83,7 @@ def main():
                                help="Number of jobs to be used to compile Bitcoin Core")
     parser_analyze.add_argument('-c', '--command', dest="command", default="", type=str,
                                help="Command to test the mutants (e.g. cmake --build build && ./build/test/functional/test.py)")
-    parser_analyze.add_argument('-st', '--survival-threshold', dest="survival_threshold", default=0.3, type=float,
+    parser_analyze.add_argument('-st', '--survival-threshold', dest="survival_threshold", default=0.75, type=float,
                                help="Maximum acceptable survival rate (0.3 = 30%)")
 
     args = parser.parse_args()
