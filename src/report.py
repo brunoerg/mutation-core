@@ -1,7 +1,26 @@
 import os
+import re
 import json
 import subprocess
 from datetime import datetime
+
+def parse_diffs_to_json(diffs_list):
+    result = {}
+    
+    for diff in diffs_list:
+        match = re.search(r'@@ -(\d+),', diff)
+        if match:
+            line_num = str(int(match.group(1)) + 3)
+            if line_num not in result:
+                result[line_num] = []
+            
+            result[line_num].append({
+                "id": len(result[line_num]) + 1,
+                "diff": diff[diff.index("@@"):],
+                "status": "alive"
+            })
+    
+    return result
 
 def generate_report(not_killed_mutants=[], folder="", original_file="", score=0, just_append=True):
     # Skips creating a report file if mutation score is 100%
@@ -38,6 +57,8 @@ def generate_report(not_killed_mutants=[], folder="", original_file="", score=0,
 
             # Append the diff output to the diffs list
             report_data["diffs"].append(result.stdout)
+
+    report_data["diffs"] = parse_diffs_to_json(report_data["diffs"])
 
     # Check if we should append to an existing file or create a new one
     json_file = 'diff_not_killed.json' if just_append else f'diff_not_killed-{original_file.replace(".cpp", "").replace(".py", "").replace("/", "-")}.json'
