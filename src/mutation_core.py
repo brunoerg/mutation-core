@@ -83,6 +83,8 @@ def main():
                                help="Number of jobs to be used to compile Bitcoin Core")
     parser_analyze.add_argument('-c', '--command', dest="command", default="", type=str,
                                help="Command to test the mutants (e.g. cmake --build build && ./build/test/functional/test.py)")
+    parser_analyze.add_argument('-st', '--survival-threshold', dest="survival_threshold", default=0.3, type=float,
+                               help="Maximum acceptable survival rate (0.3 = 30%)")
 
     args = parser.parse_args()
     if args.subcommand is None:
@@ -115,9 +117,9 @@ def main():
                     if folder.startswith("muts"):
                         folders_starting_with_muts.append(os.path.join(root, folder))
             for folder in folders_starting_with_muts:
-                analyze(folder_path=folder, command=args.command, jobs=args.jobs, timeout=args.timeout)
+                analyze(folder_path=folder, command=args.command, jobs=args.jobs, timeout=args.timeout, survival_threshold=args.survival_threshold)
         else:
-            analyze(folder_path=args.folder, command=args.command, jobs=args.jobs, timeout=args.timeout)
+            analyze(folder_path=args.folder, command=args.command, jobs=args.jobs, timeout=args.timeout, survival_threshold=args.survival_threshold)
     else:
         parser.print_help()
         sys.exit("No command provided.")
