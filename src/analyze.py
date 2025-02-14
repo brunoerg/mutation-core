@@ -29,7 +29,7 @@ def get_command_to_kill(target_file_path, jobs):
         command = f"{build_command} && ./build/src/test/test_bitcoin && CI_FAILFAST_TEST_LEAVE_DANGLING=1 ./build/test/functional/test_runner.py -F"
     return command
 
-def analyze(folder_path, command="", jobs=0, timeout=1000):
+def analyze(folder_path, command="", jobs=0, timeout=1000, max_survivors=0):
     killed = []
     not_killed = []
 
@@ -51,6 +51,9 @@ def analyze(folder_path, command="", jobs=0, timeout=1000):
         len_files = len(files)
         print(f"* {len(files)-1} MUTANTS *")
         i = 0
+
+        total_mutants = len_files -1
+        survivor_mutants = 0
         for file_name in files:
             if '.txt' in file_name:
                 continue
@@ -71,16 +74,38 @@ def analyze(folder_path, command="", jobs=0, timeout=1000):
             if result:
                 print("NOT KILLED ❌")
                 not_killed.append(file_name)
+                survivor_mutants += 1
+                if max_survivors > 0:
+                    print(f"   ({survivor_mutants}/{max_survivors} survivors found)")
             else:
                 print("KILLED ✅")
                 killed.append(file_name)
             i += 1
+            
+            # Check if we've reached max survivors
+            if max_survivors > 0 and survivor_mutants >= max_survivors:
+                print(f"\n⚠️  Reached maximum number of survivors ({max_survivors})")
+                print(f"    Stopping analysis early after testing {i}/{total_mutants} mutants")
+                break
 
     except Exception as e:
         traceback.print_exc()
         print(f"An error occurred: {e}")
 
-    score = len(killed) / (len(killed) + len(not_killed))
-    print(f"\nMUTATION SCORE: {round(score * 100, 2)}%\n")
+     # Calculate and display final results
+    total_analyzed = len(killed) + len(not_killed)
+    score = len(killed) / total_analyzed if total_analyzed > 0 else 0
+    
+    print("\n" + "=" * 50)
+    print("MUTATION ANALYSIS RESULTS")
+    print("=" * 50)
+    print(f"Total mutants analyzed: {total_analyzed}/{total_mutants}")
+    print(f"Mutants killed: {len(killed)}")
+    print(f"Mutants survived: {len(not_killed)}")
+    print(f"Mutation score: {round(score * 100, 2)}%")
+    if max_survivors > 0 and survivor_mutants >= max_survivors:
+        print(f"Note: Analysis stopped early after finding {max_survivors} survivors")
+    print("=" * 50 + "\n")
+
     generate_report(not_killed, folder_path, target_file_path, score)
     return killed, not_killed
