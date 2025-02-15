@@ -64,15 +64,10 @@ def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0
         if total_mutants == 0: raise Exception(f'No mutants on the provided folder path ({folder_path})')
         else:
             for i, file_name in enumerate(files, 1):
-                current_time = time.time() - start_time
-
                 current_survival_rate = len(not_killed) / (total_mutants)
                 if current_survival_rate > survival_threshold:
                     print(f"\nTerminating early: {current_survival_rate:.2%} mutants surviving after {i} iterations")
                     print(f"Survival rate exceeds threshold of {survival_threshold:.0%}")
-                    break
-                if current_time >= timeout:
-                    print(f"\nTerminating early: execution time exceeded timeout of {timeout}s")
                     break
                 print(f"[{i}/{total_mutants}] Analyzing {file_name}")
                 file_path = os.path.join(folder_path, file_name)
