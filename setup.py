@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mutation-core',
-    version='0.1.9',
+    version='0.1.10',
     install_requires=[],
     packages=find_packages(),
     entry_points={
