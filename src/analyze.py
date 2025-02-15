@@ -72,7 +72,7 @@ def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0
                     print(f"Survival rate exceeds threshold of {survival_threshold:.0%}")
                     break
                 if current_time >= timeout:
-                    print(f"\nTerminating early: execution time exceeded timeout of {timeout:.2}s")
+                    print(f"\nTerminating early: execution time exceeded timeout of {timeout}s")
                     break
                 print(f"[{i}/{total_mutants}] Analyzing {file_name}")
                 file_path = os.path.join(folder_path, file_name)
