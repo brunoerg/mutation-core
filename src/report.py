@@ -4,6 +4,18 @@ import json
 import subprocess
 from datetime import datetime
 
+def get_git_hash():
+    try:
+        result = subprocess.run(['git', 'log', '--pretty=format:%h', '-n', '1'], 
+                              capture_output=True,
+                              text=True,
+                              check=True)
+        return result.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        print(f"Error getting git hash: {e}")
+        return None
+
+
 def parse_diffs_to_json(diffs_list):
     result = {}
     
@@ -14,9 +26,11 @@ def parse_diffs_to_json(diffs_list):
             if line_num not in result:
                 result[line_num] = []
             
+            commit = get_git_hash()
             result[line_num].append({
                 "id": len(result[line_num]) + 1,
-                "diff": diff[diff.index("@@"):],
+                "commit": commit if commit else "",
+                "diff": diff[diff.index("@@"):], 
                 "status": "alive"
             })
     
@@ -41,7 +55,6 @@ def generate_report(not_killed_mutants=[], folder="", original_file="", score=0,
         original_file = original_file[start_index:] if start_index != -1 else None
 
     subprocess.run(['git', 'checkout', '--', original_file])
-
     print("Surviving mutants:")
     # Iterate over all files in the directory
     for filename in os.listdir(folder):
