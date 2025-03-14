@@ -1,6 +1,6 @@
 # Mutation Core
 
-**A mutation testing tool for Bitcoin Core**. 
+**A mutation testing tool for Bitcoin Core**.
 
 "Mutation testing (or mutation analysis or program mutation) is used to design new software tests and evaluate the quality of existing software tests. Mutation testing involves modifying a program in small ways.[1] Each mutated version is called a mutant and tests detect and reject mutants by causing the behaviour of the original version to differ from the mutant. This is called killing the mutant. Test suites are measured by the percentage of mutants that they kill." (Wikipedia)
 
@@ -22,24 +22,24 @@
     ```
     ```diff
         @@ -560,7 +560,7 @@ util::Result<SelectionResult> SelectCoinsSRD(const std::vector<OutputGroup>& utx
-    
+
             // Add group to selection
             heap.push(group);
     -        selected_eff_value += group.GetSelectionAmount();
     +        selected_eff_value += group.GetSelectionAmount() + std::numeric_limits<CAmount>::max();
             weight += group.m_weight;
-    
+
             // If the selection weight exceeds the maximum allowed size, remove the least valuable inputs until we
     ```
     ```diff
         @@ -4194,7 +4194,7 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
         }
-    
+
         // Check timestamp against prev
     -    if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
     +    if (block.GetBlockTime() <= std::numeric_limits<int64_t>::max())
             return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "time-too-old", "block's timestamp is too early");
-    
+
         // Testnet4 only: Check timestamp against prev for difficulty-adjustment
     ```
 - Avoids creating useless mutants. (e.g. by skipping comments, `LogPrintf` statements...).
@@ -74,6 +74,20 @@ mutation-core mutate -f=path/to/file
 Generate mutants for a specific PR (it will only create mutants for the touched code. You should run it into Bitcoin Core folder):
 ```sh
 mutation-core mutate -p=PR_NUMBER
+```
+
+You can create a json file specifing the lines to skip creating mutants. e.g.:
+```
+{
+  "path/to/file": [1, 2, 3],
+  "path/to/file2": [10, 121, 8]
+}
+```
+
+When creating mutants for file, it will skip lines 1, 2 and 3. To use this feature, you can use the flag `-sl` passing
+the path to the json file.
+```sh
+mutation-core mutate ... -sl=skip.json
 ```
 
 Create only one mutant per line (if you want faster analysis):
@@ -114,7 +128,7 @@ By not specifying the command, the tool will test every mutant by running all th
 
 Does it make sense? Yes! See: https://github.com/trailofbits/necessist/blob/master/docs/Necessist%20Mutation%202024.pdf
 
-By removing some statements and method calls, we can check whether the test passes and identify buggy tests. In our case, we 
+By removing some statements and method calls, we can check whether the test passes and identify buggy tests. In our case, we
 will not touch any `wait_for`, `wait_until`, `send_and_ping`, `assert_*`, `BOOST_*` and other verifications.
 
 See an example of the usage of this tool for `test/functional/p2p_compactblocks.py`.
@@ -139,7 +153,7 @@ See some of the surviving mutants:
 -        self.utxos.append([block.vtx[-1].sha256, 0, block.vtx[-1].vout[0].nValue])
          test_node.send_and_ping(msg_tx(block.vtx[1]))
          assert block.vtx[1].hash in node.getrawmempool()
- 
+
 ```
 
 ```diff
