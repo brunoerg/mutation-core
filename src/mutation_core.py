@@ -10,6 +10,7 @@ from src.cov import parse_coverage_file
 
 import argparse
 import os
+import json
 import sys
 import pathlib
 
@@ -21,17 +22,32 @@ def mkdir_mutation_folder(name):
     if not os.path.isdir(f'{BASE_PATH}/{name}'):
         os.mkdir(path)
 
+def read_json_dict(filename):
+    try:
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            return data
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found.")
+        return {}
+    except json.JSONDecodeError:
+        print(f"Error: File '{filename}' contains invalid JSON.")
+        return {}
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return {}
+
 
 def mutation_core(pr_number=None, file=None, one_mutant=False,
                   only_security_mutations=False, range_lines=None,
-                  cov=None, test_only=False):
+                  cov=None, test_only=False, skip_lines=None):
     if cov:
         cov = parse_coverage_file(cov)
     if file:
         is_unit_test = 'test' in file and 'py' not in file
         mutate(file, touched_lines=None, pr_number=None,
                one_mutant=one_mutant, only_security_mutations=only_security_mutations,
-               range_lines=range_lines, cov=cov, is_unit_test=is_unit_test)
+               range_lines=range_lines, cov=cov, is_unit_test=is_unit_test, skip_lines=skip_lines)
         return
     files_changed = get_changed_files(pr_number)
     result = []
@@ -51,8 +67,8 @@ def mutation_core(pr_number=None, file=None, one_mutant=False,
     for item in result:
         mutate(file_to_mutate=item['file_path'], touched_lines=item['lines_touched'],
                pr_number=pr_number, one_mutant=one_mutant,
-               only_security_mutations=only_security_mutations, 
-               cov=cov, is_unit_test=item["is_unit_test"])
+               only_security_mutations=only_security_mutations,
+               cov=cov, is_unit_test=item["is_unit_test"], skip_lines=skip_lines)
 
 
 def main():
@@ -66,6 +82,8 @@ def main():
                                help="Only create mutants for unit and functional tests")
     parser_mutate.add_argument('-c', '--cov', dest="cov", default="", type=str,
                                help="Path for the coverage file (*.info generated with cmake -P build/Coverage.cmake)")
+    parser_mutate.add_argument('-sl', '--skip_lines', dest="skip", default="", type=str,
+                               help="Path for the file with lines to skip when creating mutants")
     parser_mutate.add_argument('-f', '--file', dest="file", default="", type=str,
                                help="File path")
     parser_mutate.add_argument('-r', '--range', dest="range_lines", type=int, default=None, nargs=2,
@@ -90,6 +108,10 @@ def main():
     if args.subcommand is None:
         parser.print_help()
     elif args.subcommand == "mutate":
+        if args.skip:
+            args.skip = read_json_dict(args.skip)
+            if args.skip == {}:
+                sys.exit()
         if args.cov != "" and args.range_lines is not None:
             sys.exit("You should only provide coverage file or the range of lines to mutate")
         if args.pr != 0 and args.file != "":
@@ -97,19 +119,19 @@ def main():
         if args.pr != 0:
             mutation_core(pr_number=args.pr, one_mutant=args.one_mutant,
                           only_security_mutations=args.only_security_mutations,
-                          cov=args.cov, test_only=args.test_only)
+                          cov=args.cov, test_only=args.test_only, skip_lines=args.skip)
         elif args.file != "":
             range_lines = args.range_lines
             if range_lines:
                 if range_lines[0] > range_lines[1]:
                     sys.exit("Invalid range")
             mutation_core(file=args.file, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations,
-                          range_lines=range_lines, cov=args.cov)
+                          range_lines=range_lines, cov=args.cov, skip_lines=args.skip)
         else:
             mutation_core(pr_number=args.pr, one_mutant=args.one_mutant, only_security_mutations=args.only_security_mutations,
-                          cov=args.cov, test_only=args.test_only)
+                          cov=args.cov, test_only=args.test_only, skip_lines=args.skip)
     elif args.subcommand == "analyze":
-        # When the folder is not specified, try to find all muts* folder 
+        # When the folder is not specified, try to find all muts* folder
         if args.folder == "":
             folders_starting_with_muts = []
             for root, dirs, _ in os.walk('.'):

@@ -110,7 +110,8 @@ def write_mutation(file_to_mutate, lines, i, pr_number=None):
 
 def mutate(file_to_mutate="", touched_lines=None, pr_number=None,
            one_mutant=False, only_security_mutations=False,
-           range_lines=None, cov=None, is_unit_test=False):
+           range_lines=None, cov=None, is_unit_test=False,
+           skip_lines=None):
     print(f"Generating mutants for {file_to_mutate}...")
     input_file = f'{BASE_PATH}/{file_to_mutate}'
 
@@ -123,7 +124,8 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None,
     if (".py" in file_to_mutate) or is_unit_test:
         ALL_OPS = TEST_OPERATORS
 
-    print(file_to_mutate)
+    if skip_lines:
+        skip_lines = skip_lines[file_to_mutate] if file_to_mutate in skip_lines else None
 
     touched_lines = touched_lines if touched_lines else list(range(1, len(source_code)))
     if one_mutant:
@@ -143,6 +145,8 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None,
         if cov and line_num not in lines_with_test_coverage:
             continue
         if range_lines and (line_num < range_lines[0] or line_num > range_lines[1]):
+            continue
+        if skip_lines and line_num in skip_lines:
             continue
         lines = source_code.copy()
         line_before_mutation = lines[line_num]
