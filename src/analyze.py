@@ -30,7 +30,7 @@ def get_command_to_kill(target_file_path, jobs):
 def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0.3):
     """
     Analyze mutants with early termination if too many survive.
-    
+
     Args:
         folder_path: Path to mutants folder
         command: Test command to run
@@ -40,7 +40,6 @@ def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0
     """
     killed = []
     not_killed = []
-    start_time = time.time()
 
     try:
         # Read target file path
@@ -57,7 +56,7 @@ def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0
         # Get list of mutant files
         files = [f for f in os.listdir(folder_path)
                 if os.path.isfile(os.path.join(folder_path, f)) and not f.endswith('.txt')]
-        
+
         total_mutants = len(files)
         print(f"* {total_mutants} MUTANTS *")
 
@@ -95,4 +94,8 @@ def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0
         traceback.print_exc()
         print(f"An error occurred: {e}")
         raise
+
+    # Restore the file
+    run(f"git restore {target_file_path}")
+
     return killed, not_killed
