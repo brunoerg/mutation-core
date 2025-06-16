@@ -22,6 +22,7 @@ DO_NOT_MUTATE = ["//",
                  "/*",
                  "LogPrintf",
                  "LogPrint",
+                 "strprintf",
                  "G_FUZZING"]
 
 DO_NOT_MUTATE_PY = ["wait_for",
