@@ -94,4 +94,8 @@ def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0
         traceback.print_exc()
         print(f"An error occurred: {e}")
         raise
+
+    # Restore the file
+    run(f"git restore {target_file_path}")
+
     return killed, not_killed
