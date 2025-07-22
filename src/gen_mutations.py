@@ -154,6 +154,8 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None,
 
         if line_before_mutation.lstrip().startswith(tuple(DO_NOT_MUTATE)):
             continue
+        if "EnableFuzzDeterminism" in line_before_mutation:
+            continue
         if ".py" in file_to_mutate or is_unit_test:
             do_not_mutate = any(word in line_before_mutation for word in DO_NOT_MUTATE_PY)
             regex_to_search = re.search(r"^\s*([a-zA-Z_]\w*)\s*=\s*(.+)$", line_before_mutation)
