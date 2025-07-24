@@ -77,6 +77,10 @@ DO_NOT_MUTATE_UNIT = ["while",
                       "EXCLUSIVE_LOCKS_REQUIRED",
                       "catch"]
 
+SKIP_IF_CONTAIN = [
+    "EnableFuzzDeterminism",
+    "nLostUnk"
+]
 
 def mkdir_mutation_folder(name, file_to_mutate):
     path = os.path.join(BASE_PATH, name)
@@ -154,7 +158,7 @@ def mutate(file_to_mutate="", touched_lines=None, pr_number=None,
 
         if line_before_mutation.lstrip().startswith(tuple(DO_NOT_MUTATE)):
             continue
-        if "EnableFuzzDeterminism" in line_before_mutation:
+        if any(word in line_before_mutation for word in SKIP_IF_CONTAIN):
             continue
         if ".py" in file_to_mutate or is_unit_test:
             do_not_mutate = any(word in line_before_mutation for word in DO_NOT_MUTATE_PY)
