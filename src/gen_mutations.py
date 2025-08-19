@@ -80,7 +80,8 @@ DO_NOT_MUTATE_UNIT = ["while",
 
 SKIP_IF_CONTAIN = [
     "EnableFuzzDeterminism",
-    "nLostUnk"
+    "nLostUnk",
+    "RPCArg::Type::"
 ]
 
 def mkdir_mutation_folder(name, file_to_mutate):
