@@ -1,7 +1,6 @@
 import subprocess
 import os
 import traceback
-import time
 from src.report import generate_report
 
 def run(command, timeout=10000):
@@ -38,7 +37,7 @@ def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0
         timeout: Maximum execution time per mutant
         survival_threshold: Maximum acceptable survival rate (0.3 = 30%)
     """
-    killed = []
+    num_killed = 0
     not_killed = []
 
     try:
@@ -84,10 +83,10 @@ def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0
                     not_killed.append(file_name)
                 else:
                     print("KILLED ✅")
-                    killed.append(file_name)
+                    num_killed = num_killed + 1
 
             # Always generate report with current results
-            score = len(killed) / total_mutants
+            score = num_killed / total_mutants
             print(f"\nMUTATION SCORE: {round(score * 100, 2)}%")
             generate_report(not_killed, folder_path, target_file_path, score)
     except Exception as e:
@@ -98,4 +97,4 @@ def analyze(folder_path, command="", jobs=0, timeout=10000, survival_threshold=0
     # Restore the file
     run(f"git restore {target_file_path}")
 
-    return killed, not_killed
+    return num_killed, not_killed
