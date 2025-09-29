@@ -6,7 +6,7 @@ from datetime import datetime
 
 def get_git_hash():
     try:
-        result = subprocess.run(['git', 'log', '--pretty=format:%h', '-n', '1'], 
+        result = subprocess.run(['git', 'log', '--pretty=format:%h', '-n', '1'],
                               capture_output=True,
                               text=True,
                               check=True)
@@ -18,25 +18,25 @@ def get_git_hash():
 
 def parse_diffs_to_json(diffs_list):
     result = {}
-    
+
     for diff in diffs_list:
         match = re.search(r'@@ -(\d+),', diff)
         if match:
             line_num = str(int(match.group(1)) + 3)
             if line_num not in result:
                 result[line_num] = []
-            
+
             commit = get_git_hash()
             result[line_num].append({
                 "id": len(result[line_num]) + 1,
                 "commit": commit if commit else "",
-                "diff": diff[diff.index("@@"):], 
+                "diff": diff[diff.index("@@"):],
                 "status": "alive"
             })
-    
+
     return result
 
-def generate_report(not_killed_mutants=[], folder="", original_file="", score=0, just_append=True):
+def generate_report(not_killed_mutants=[], folder="", original_file="", score=0.00, just_append=True):
     # Skips creating a report file if mutation score is 100%
     if len(not_killed_mutants) == 0:
         return
